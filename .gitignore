@@ -1,0 +1,42 @@
+# Application
+node_modules
+build
+coverage
+*.log
+/**/*.css
+dump.rdb
+
+# Fonts
+!client/public/css/materialdesignicons.css
+!client/public/css/materialdesignicons.min.css
+
+# Temp files
+tmp/
+
+# Editors
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+*.sw[po]
+.idea/
+*.iml
+*.iws
+.vscode/
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+*.sh
+.env*.local
+
+doc/

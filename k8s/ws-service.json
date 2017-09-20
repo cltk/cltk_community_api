@@ -1,0 +1,21 @@
+{
+  "kind": "Service",
+  "apiVersion": "v1",
+  "metadata": {
+    "name": "orpheus-ws-serv"
+  },
+  "spec": {
+    "ports": [
+      {
+        "port": 80,
+				"name": "http",
+        "targetPort": 3002
+      }
+    ],
+    "selector": {
+      "name": "orpheus-app-pod"
+    },
+    "sessionAffinity": "ClientIP",
+    "type": "LoadBalancer"
+  }
+}
