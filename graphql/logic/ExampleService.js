@@ -10,7 +10,7 @@ export default class UserService extends PermissionsService {
     /**
      * Authentication
      */
-		if (user) {
+		if (this.user) {
       /**
        * Validate permissions
        */
