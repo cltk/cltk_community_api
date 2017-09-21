@@ -4,7 +4,7 @@ import { GraphQLID, GraphQLString, GraphQLNonNull } from 'graphql';
 import UserType from '../types/models/user';
 
 import { RemoveType } from '../types';
-import { ExampleInputType } from '../types/models/example';
+import { ExampleType, ExampleInputType } from '../types/models/example';
 
 // models
 import Example from '../../models/example';
@@ -14,7 +14,7 @@ import { AuthenticationError } from '../errors';
 
 const exampleMutationFields = {
 	exampleUpdate: {
-		type: UserType,
+		type: ExampleType,
 		description: 'Example mutation',
 		args: {
 			_id: {
