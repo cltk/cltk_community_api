@@ -21,26 +21,9 @@ export default function corsSetup(app) {
 		};
 
 		const hostname = req.hostname;
-		const project = await projectLoader.load(hostname);
 
-		if (project) {
+		if (whitelist.indexOf(req.header('Origin')) !== -1) {
 			corsOptions.origin = true;
-			req.project = project;
-		} else if (whitelist.indexOf(req.header('Origin')) !== -1) {
-			corsOptions.origin = true;
-			req.project = null;
-
-			console.error('Project white listed but not in the database! Graphql may have limited functionality.');
-
-			if (process.env.NODE_ENV === 'development') {
-				// TODO - delete this and rewrite to generate a project on development and on start of server
-				req.project = {
-					title: 'Test Project',
-					hostname: 'localhost',
-					description: 'Test project description quid faciat laetas segetes',
-					users: [],
-				};
-			}
 		}
 
 		callback(null, corsOptions);
