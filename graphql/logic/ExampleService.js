@@ -47,4 +47,16 @@ export default class ExampleService extends PermissionsService {
 			});
 		}
 	}
+  exampleRemove(_id) {
+    if (this.hasExamplePermission()) {
+      return new Promise((resolve) => {
+        Example.findOneAndRemove(_id, (err, removedExample) => {
+          if (err) {
+            resolve(new Error('Error updating', _id));
+          }
+          resolve(removedExample);
+        });
+      });
+    }
+  }
 }

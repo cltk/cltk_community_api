@@ -37,7 +37,20 @@ const exampleMutationFields = {
 			const exampleService = new ExampleService(user);
 			return await exampleService.exampleUpdate(_id, example);
 		}
-	}
+	},
+  exampleRemove: {
+    type: RemoveType,
+    description: 'Example remove mutation',
+    args: {
+      _id: {
+        type: new GraphQLNonNull(GraphQLID),
+      },
+    },
+    async resolve(obj, { _id }, { user }) {
+      const exampleService = new ExampleService(user);
+      return await exampleService.exampleRemove(_id);
+    }
+  }
 };
 
 export default exampleMutationFields;
