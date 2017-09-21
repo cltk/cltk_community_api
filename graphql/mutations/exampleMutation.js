@@ -24,7 +24,7 @@ const exampleMutationFields = {
 				type: ExampleInputType
 			}
 		},
-		async resolve(obj, { user }, context) {
+		async resolve(obj, { _id, example }, context) {
       // if user is not logged in
 			if (!user) throw new AuthenticationError();
 
