@@ -21,7 +21,7 @@ import User from './models/user';
  */
 const RootSchema = new GraphQLSchema({
 	query: RootQuery,
-	// mutation: RootMutation,
+	mutation: RootMutation,
 	// subscription: RootSubscription,
 });
 
