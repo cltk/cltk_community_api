@@ -1,42 +1,50 @@
-import {Meteor} from 'meteor/meteor';
 import PermissionsService from './PermissionsService';
 import Example from '../../models/example';
 
-export default class UserService extends PermissionsService {
+export default class ExampleService extends PermissionsService {
 	constructor(props) {
 		super(props);
 	}
-	exampleUpdate(_id, example) {
+
+	exampleCreate(example) {
     /**
-     * Authentication
+     * Authentication & Validate permissions
      */
-		if (this.user) {
+		if (this.hasExamplePermission()) {
       /**
-       * Validate permissions
+       * Initiate item
        */
-
-			if (this.hasExamplePermission()) {
-        /**
-         * Initiate item
-         */
-				const FoundExample = Example.findById(_id);
-				if (!FoundExample) return new Error('Item not found');
-			}
-
-      /**
-       * Perform action
-       */
-
-      // update item
-			FoundExample.assign(example);
-
-      // Save new item
+			const NewExample = new Example(example);
+      // save new item
 			try {
-				return FoundExample.save();
+				return NewExample.save();
 			} catch (err) {
 				return new Error(err);
 			}
 		}
-		return new Error('User not logged in');
+	}
+
+	exampleUpdate(_id, example) {
+    /**
+     * Authentication
+     */
+    // if (this.user) {
+    /**
+     * Validate permissions
+     */
+
+		if (this.hasExamplePermission()) {
+      /**
+       * Initiate item
+       */
+			return new Promise((resolve) => {
+				Example.findByIdAndUpdate(_id, {$set: example}, (err, updatedExample) => {
+					if (err) {
+						resolve(new Error('Error updating', _id));
+					}
+					resolve(updatedExample);
+				});
+			});
+		}
 	}
 }

@@ -1,21 +1,30 @@
 import { GraphQLID, GraphQLString, GraphQLNonNull } from 'graphql';
 
 // types
-import UserType from '../types/models/user';
-
 import { RemoveType } from '../types';
 import { ExampleType, ExampleInputType } from '../types/models/example';
 
-// models
-import Example from '../../models/example';
-
-// errors
-import { AuthenticationError } from '../errors';
+// bll
+import ExampleService from '../logic/ExampleService';
 
 const exampleMutationFields = {
+	exampleCreate: {
+		type: ExampleType,
+		description: 'Example create mutation',
+		args: {
+			example:
+			{
+				type: new GraphQLNonNull(ExampleInputType)
+			}
+		},
+		async resolve(obj, { example }, { user }) {
+			const exampleService = new ExampleService(user);
+			return await exampleService.exampleCreate(example);
+		}
+	},
 	exampleUpdate: {
 		type: ExampleType,
-		description: 'Example mutation',
+		description: 'Example update mutation',
 		args: {
 			_id: {
 				type: GraphQLID,
@@ -24,21 +33,9 @@ const exampleMutationFields = {
 				type: ExampleInputType
 			}
 		},
-		async resolve(obj, { _id, example }, context) {
-      // if user is not logged in
-			if (!user) throw new AuthenticationError();
-
-			const FoundUser = await User.findById(context.user._id);
-
-			Object.keys(user).forEach((key) => {
-				FoundItem[key] = user[key];
-			});
-
-			try {
-				return await FoundUser.save();
-			} catch (err) {
-				handleMongooseError(err);
-			}
+		async resolve(obj, { _id, example }, { user }) {
+			const exampleService = new ExampleService(user);
+			return await exampleService.exampleUpdate(_id, example);
 		}
 	}
 };
