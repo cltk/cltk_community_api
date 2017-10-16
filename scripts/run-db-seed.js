@@ -1,12 +1,12 @@
 import dotenv from 'dotenv';
 import faker from 'faker';
 
-import setupDB, { closeDB } from '../mongoose';
+import setupDB, { closeDB } from '../src/mongoose';
 
-import generateUsers from '../__seeds__/user';
-import generateProjects from '../__seeds__/project';
-import generateCollection from '../__seeds__/collection';
-import generateItem from '../__seeds__/item';
+import generateUsers from '../src/__seeds__/user';
+import generateProjects from '../src/__seeds__/project';
+import generateCollection from '../src/__seeds__/collection';
+import generateItem from '../src/__seeds__/item';
 
 dotenv.config();
 

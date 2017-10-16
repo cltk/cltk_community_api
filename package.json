@@ -75,7 +75,6 @@
     "shortid": "^2.2.8"
   },
   "scripts": {
-    "client": "NODE_ENV=development babel-node scripts/start-client.js",
     "lint": "eslint .",
     "test": "jest --config ./jest.config.js",
     "server": "NODE_ENV=development nodemon index.js --exec babel-node",

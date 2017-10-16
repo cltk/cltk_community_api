@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
 
-import setupDB, { closeDB } from '../mongoose';
+import setupDB, { closeDB } from '../src/mongoose';
 
 dotenv.config();
 
