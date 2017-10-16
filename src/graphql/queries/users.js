@@ -1,4 +1,4 @@
-import { GraphQLID, GraphQLNull } from 'graphql';
+import { GraphQLID, GraphQLNull, GraphQLList } from 'graphql';
 
 // types
 import UserType from '../types/models/user';

@@ -1,5 +1,5 @@
 // dotenv
-const dotenvSetup = require('./dotenv');
+const dotenvSetup = require('./src/dotenv');
 
 dotenvSetup();
 

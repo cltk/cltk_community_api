@@ -77,7 +77,7 @@
   "scripts": {
     "lint": "eslint .",
     "test": "jest --config ./jest.config.js",
-    "server": "NODE_ENV=development nodemon index.js --exec babel-node",
+    "server": "NODE_ENV=development nodemon ./src/index.js --exec babel-node",
     "start": "npm run server",
     "db-seed": "babel-node scripts/run-db-seed.js",
     "db-clear": "babel-node scripts/run-db-clear.js",
