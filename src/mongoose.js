@@ -1,6 +1,5 @@
 import mongoose from 'mongoose';
 import assert from 'assert';
-
 // session store
 import createMongoDBStore from 'connect-mongodb-session';
 

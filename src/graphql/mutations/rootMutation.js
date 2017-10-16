@@ -1,6 +1,9 @@
 import { GraphQLObjectType } from 'graphql';
 
-import exampleMutation from './exampleMutation';
+import projectMutationFields from './projects';
+import collectionMutationFields from './collections';
+import itemMutationFields from './items';
+import miradorMutationFields from './miradorManifests';
 
 /**
  * Root mutations
@@ -10,7 +13,10 @@ const RootMutations = new GraphQLObjectType({
 	name: 'RootMutationType',
 	description: 'Root mutation object type',
 	fields: {
-    ...exampleMutation
+		...projectMutationFields,
+		...collectionMutationFields,
+		...itemMutationFields,
+		...miradorMutationFields,
 	},
 });
 

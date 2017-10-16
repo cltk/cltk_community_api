@@ -3,7 +3,7 @@ import { GraphQLString, GraphQLNonNull, GraphQLID } from 'graphql';
 // types
 import UserType from '../types/models/user';
 
-import UserService from '../logic/UserService';
+import { RemoveType } from '../types';
 
 // models
 import User from '../../models/user';
@@ -20,11 +20,21 @@ const userMutationFields = {
 				type: UserType,
 			}
 		},
-		async resolve(parent, { user }, context) {
-			const userService = new UserService({token});
-			return await userService.userUpdate(_id);
+		async resolve(obj, { user }, context) {
+			// if user is not logged in
+			if (!user) throw new AuthenticationError();
+
+			const FoundUser = await User.findById(context.user._id);
+
+			Object.keys(user).forEach((key) => {
+				FoundItem[key] = user[key];
+			});
+
+			try {
+				return await FoundUser.save();
+			} catch (err) {
+				handleMongooseError(err);
+			}
 		}
 	}
 };
-
-export default userMutationFields;
