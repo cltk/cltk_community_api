@@ -7,7 +7,7 @@ export default function s3Setup(app) {
 		accessKeyId: process.env.AWS_ACCESS_KEY_ID,
 		secretAccessKey: process.env.AWS_SECRET_ACCESS,
 	});
-	
+
 	app.use('/s3', S3Router({
 		bucket: process.env.AWS_BUCKET,
 		ACL: 'public-read',

@@ -41,6 +41,13 @@ const ProjectSchema = new Schema({
 });
 
 
+/**
+ * Project mongoose model
+ * @type {Object}
+ */
+const Project = mongoose.model('Project', ProjectSchema);
+
+
 // add timestamps (createdAt, updatedAt)
 ProjectSchema.plugin(timestamp);
 
@@ -104,13 +111,6 @@ ProjectSchema.statics.createByAdmin = function createByAdmin(userId, newProject)
 		...newProject,
 	});
 };
-
-
-/**
- * Project mongoose model
- * @type {Object}
- */
-const Project = mongoose.model('Project', ProjectSchema);
 
 export default Project;
 export { ProjectSchema };

@@ -28,11 +28,9 @@ const RootSchema = new GraphQLSchema({
 // mask error messages
 maskErrors(RootSchema);
 
-const getGraphQLContext = req => {
-	return ({
-		user: req.user,
-	});
-};
+const getGraphQLContext = req => ({
+	user: req.user,
+});
 
 /**
  * Set up the graphQL HTTP endpoint

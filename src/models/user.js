@@ -30,6 +30,13 @@ const UserSchema = new Schema({
 	resetPasswordExpires: Date
 });
 
+/**
+ * User mongoose model
+ * @type {Object}
+ */
+const User = mongoose.model('User', UserSchema);
+
+
 // add password hash and salt
 UserSchema.plugin(passportLocalMongoose);
 
@@ -87,13 +94,6 @@ UserSchema.statics.resetPassword = async function resetPassword(resetPasswordTok
 	}
 };
 
-
-
-/**
- * User mongoose model
- * @type {Object}
- */
-const User = mongoose.model('User', UserSchema);
 
 export default User;
 export { UserSchema };
