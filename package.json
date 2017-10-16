@@ -85,7 +85,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@gitlab.archimedesdigital.io:archimedes/orpheus.git"
+    "url": "git@gitlab.archimedes.digital:archimedes/orpheus-api.git"
   },
   "author": "Archimedes Digital",
   "license": "MIT"
