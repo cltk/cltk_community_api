@@ -52,8 +52,8 @@ export const loginOAuth2 = async (res, accessToken, network) => {
 /**
  * Login with OAuth v.1
  * @param  {Object} res      	Express response object
- * @param  {[type]} oauthToken       oAuth access token
- * @param  {[type]} oauthTokenSecret oAuth access secret
+ * @param  {Object} oauthToken       oAuth access token
+ * @param  {String} oauthTokenSecret oAuth access secret
  * @param  {String} network     Name of network (e.g. facebook)
  */
 export const loginOAuth1 = async (res, oauthToken, oauthTokenSecret, network) => {

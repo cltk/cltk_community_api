@@ -1,6 +1,5 @@
 import mongoose from 'mongoose';
 import assert from 'assert';
-
 // session store
 import createMongoDBStore from 'connect-mongodb-session';
 
@@ -8,6 +7,10 @@ import createMongoDBStore from 'connect-mongodb-session';
 // Use native promises
 mongoose.Promise = global.Promise;
 
+/**
+ * Get the connection URL based on environment parameters
+ * @returns {string} the connection string
+ */
 const getURL = () => {
 	const DB_HOST = process.env.DB_HOST;
 	const DB_PORT = process.env.DB_PORT;
@@ -22,6 +25,9 @@ const getURL = () => {
 	return `mongodb://${DB_HOST}:${DB_PORT}/${DB_NAME}`;
 };
 
+/**
+ * Close connection to database
+ */
 const closeDB = () => {
 	mongoose.disconnect();
 	console.log('database closed');
@@ -50,6 +56,10 @@ const dbSetup = () => {
 	return mongoose.connect(url, options).connection;
 };
 
+/**
+ * Setup the mongo store for session information
+ * @returns {Object} store
+ */
 const storeSetup = (session) => {
 
 	const uri = getURL();

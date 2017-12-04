@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: models/user.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: models/user.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import crypto from 'crypto';
+import mongoose from 'mongoose';
+import timestamp from 'mongoose-timestamp';
+import passportLocalMongoose from 'passport-local-mongoose';
+
+const Schema = mongoose.Schema;
+
+/**
+ * User base schema
+ * @type {Schema}
+ */
+const UserSchema = new Schema({
+	username: String,
+	name: String,
+	email: String,
+	bio: String,
+	twitter: String,
+	linkedIn: String,
+	facebook: String,
+	password: String,
+	oauthIds: [{
+		network: String,
+		id: String,
+	}],
+	verified: {
+		type: Boolean,
+		defualt: false,
+	},
+	resetPasswordToken: String,
+	resetPasswordExpires: Date
+});
+
+
+// add password hash and salt
+UserSchema.plugin(passportLocalMongoose);
+
+// add timestamp (createdAt, updatedAt)
+UserSchema.plugin(timestamp);
+
+// Statics
+// // this method is needed for dataloader to work
+UserSchema.statics.findById = function findById(_id, cb) {
+	return User.findOne({ _id }, cb); // eslint-disable-line
+};
+
+UserSchema.statics.findByOAuth = function findByOAuth(id, network, cb) {
+	return User.findOne({ oauthIds: { $elemMatch: { network, id } } }, cb); // eslint-disable-line
+};
+
+UserSchema.statics.createOAuth = async function createOAuth({ id, network }, cb) {
+	const user = await User.findByOAuth(id, network); // eslint-disable-line
+	if (user) return null;
+	return User.create({ oauthIds: [{ id, network }] }, cb); // eslint-disable-line
+};
+
+UserSchema.statics.generatePasswordResetToken = async function generatePasswordResetToken(username) {
+	try {
+		const buf = await crypto.randomBytes(48);
+		const token = buf.toString('hex');
+		return User.findOneAndUpdate({ username }, { // eslint-disable-line
+			resetPasswordToken: token,
+			resetPasswordExpires: Date.now() + 3600000, // 1 hour
+		});
+	} catch (err) {
+		throw err;
+	}
+};
+
+UserSchema.statics.resetPassword = async function resetPassword(resetPasswordToken, newPassword) {
+	try {
+		const user = await User.findOne({ resetPasswordToken, resetPasswordExpires: { $gt: Date.now() } }); // eslint-disable-line
+		if (user) {
+			// second value must be passed - workaround for model bug
+			return new Promise((resolve, reject) => {
+				user.setPassword(newPassword, (err, userWithNewPassword) => {
+					if (err) reject(err);
+					userWithNewPassword.save((saveErr) => {
+						if (saveErr) reject(saveErr);
+						resolve(userWithNewPassword);
+					});
+				});
+			});
+		}
+		return null;
+
+	} catch (err) {
+		throw err;
+	}
+};
+
+
+/**
+ * User mongoose model
+ * @type {Object}
+ */
+const User = mongoose.model('User', UserSchema);
+
+export default User;
+export { UserSchema };
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="EmailManager.html">EmailManager</a></li></ul><h3>Global</h3><ul><li><a href="global.html#ArgumentError">ArgumentError</a></li><li><a href="global.html#AuthenticationError">AuthenticationError</a></li><li><a href="global.html#closeDB">closeDB</a></li><li><a href="global.html#Collection">Collection</a></li><li><a href="global.html#CollectionSchema">CollectionSchema</a></li><li><a href="global.html#dbSetup">dbSetup</a></li><li><a href="global.html#File">File</a></li><li><a href="global.html#FileSchema">FileSchema</a></li><li><a href="global.html#generateJWT">generateJWT</a></li><li><a href="global.html#getURL">getURL</a></li><li><a href="global.html#handleMongooseError">handleMongooseError</a></li><li><a href="global.html#Item">Item</a></li><li><a href="global.html#ItemSchema">ItemSchema</a></li><li><a href="global.html#jwtAuthenticate">jwtAuthenticate</a></li><li><a href="global.html#loginOAuth1">loginOAuth1</a></li><li><a href="global.html#loginOAuth2">loginOAuth2</a></li><li><a href="global.html#loginPWD">loginPWD</a></li><li><a href="global.html#miradorQueryFields">miradorQueryFields</a></li><li><a href="global.html#MongooseDuplicateKeyError">MongooseDuplicateKeyError</a></li><li><a href="global.html#MongooseGeneralError">MongooseGeneralError</a></li><li><a href="global.html#MongooseValidationError">MongooseValidationError</a></li><li><a href="global.html#oauthSetup">oauthSetup</a></li><li><a href="global.html#PermissionError">PermissionError</a></li><li><a href="global.html#Project">Project</a></li><li><a href="global.html#ProjectError">ProjectError</a></li><li><a href="global.html#ProjectSchema">ProjectSchema</a></li><li><a href="global.html#redisSetup">redisSetup</a></li><li><a href="global.html#RootMutations">RootMutations</a></li><li><a href="global.html#RootQuery">RootQuery</a></li><li><a href="global.html#RootSchema">RootSchema</a></li><li><a href="global.html#RootSubscription">RootSubscription</a></li><li><a href="global.html#storeSetup">storeSetup</a></li><li><a href="global.html#User">User</a></li><li><a href="global.html#UserSchema">UserSchema</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sun Dec 03 2017 22:22:28 GMT-0500 (EST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

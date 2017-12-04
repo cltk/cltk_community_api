@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: graphql.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: graphql.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import { graphqlExpress, graphiqlExpress } from 'graphql-server-express';
+import { formatError } from 'apollo-errors';
+import { GraphQLSchema, execute, subscribe } from 'graphql';
+import { maskErrors } from 'graphql-errors';
+import { createServer } from 'http';
+// import { PubSub } from 'graphql-subscriptions';
+import { RedisPubSub } from 'graphql-redis-subscriptions';
+import { SubscriptionServer } from 'subscriptions-transport-ws';
+import jwt from 'jsonwebtoken';
+
+import { jwtAuthenticate } from './authentication';
+
+import RootQuery from './graphql/queries/rootQuery';
+import RootMutation from './graphql/mutations/rootMutation';
+import RootSubscription from './graphql/subscriptions/rootSubscription';
+
+// models
+import User from './models/user';
+
+/**
+ * Root schema
+ * @type {GraphQLSchema}
+ */
+const RootSchema = new GraphQLSchema({
+	query: RootQuery,
+	mutation: RootMutation,
+	subscription: RootSubscription,
+});
+
+// mask error messages
+maskErrors(RootSchema);
+
+export const pubsub = new RedisPubSub({
+	connection: {
+		host: process.env.REDIS_HOST,
+		port: process.env.REDIS_PORT,
+	},
+});
+
+const getGraphQLContext = req => {
+	return ({
+		user: req.user,
+		project: req.project,
+	});
+};
+
+/**
+ * Set up the graphQL HTTP endpoint
+ * @param  {Object} app 	express app instance
+ */
+export default function setupGraphql(app) {
+
+	app.use('/graphql', jwtAuthenticate, graphqlExpress(req => ({
+		schema: RootSchema,
+		context: getGraphQLContext(req),
+		formatError,
+	})));
+
+	app.use('/graphiql', graphiqlExpress({
+	 	endpointURL: '/graphql',
+	 	subscriptionsEndpoint: `ws://${process.env.WS_SERVER_HOST}:${process.env.WS_SERVER_PORT}/${process.env.WS_SERVER_URI}`
+	}));
+
+	// Wrap the Express server
+	const ws = createServer(app);
+	ws.listen(process.env.WS_SERVER_PORT, () => {
+		console.log(`GraphQL WebSocket Server is now running on ws://${process.env.WS_SERVER_HOST}:${process.env.WS_SERVER_PORT}`);
+		// Set up the WebSocket for handling GraphQL subscriptions
+		const subscriptionsServer = new SubscriptionServer({
+			execute,
+			subscribe,
+			schema: RootSchema,
+		}, {
+			server: ws,
+			path: `/${process.env.WS_SERVER_URI}`,
+		});
+	});
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="EmailManager.html">EmailManager</a></li></ul><h3>Global</h3><ul><li><a href="global.html#ArgumentError">ArgumentError</a></li><li><a href="global.html#AuthenticationError">AuthenticationError</a></li><li><a href="global.html#closeDB">closeDB</a></li><li><a href="global.html#Collection">Collection</a></li><li><a href="global.html#CollectionSchema">CollectionSchema</a></li><li><a href="global.html#dbSetup">dbSetup</a></li><li><a href="global.html#File">File</a></li><li><a href="global.html#FileSchema">FileSchema</a></li><li><a href="global.html#generateJWT">generateJWT</a></li><li><a href="global.html#getURL">getURL</a></li><li><a href="global.html#handleMongooseError">handleMongooseError</a></li><li><a href="global.html#Item">Item</a></li><li><a href="global.html#ItemSchema">ItemSchema</a></li><li><a href="global.html#jwtAuthenticate">jwtAuthenticate</a></li><li><a href="global.html#loginOAuth1">loginOAuth1</a></li><li><a href="global.html#loginOAuth2">loginOAuth2</a></li><li><a href="global.html#loginPWD">loginPWD</a></li><li><a href="global.html#miradorQueryFields">miradorQueryFields</a></li><li><a href="global.html#MongooseDuplicateKeyError">MongooseDuplicateKeyError</a></li><li><a href="global.html#MongooseGeneralError">MongooseGeneralError</a></li><li><a href="global.html#MongooseValidationError">MongooseValidationError</a></li><li><a href="global.html#oauthSetup">oauthSetup</a></li><li><a href="global.html#PermissionError">PermissionError</a></li><li><a href="global.html#Project">Project</a></li><li><a href="global.html#ProjectError">ProjectError</a></li><li><a href="global.html#ProjectSchema">ProjectSchema</a></li><li><a href="global.html#redisSetup">redisSetup</a></li><li><a href="global.html#RootMutations">RootMutations</a></li><li><a href="global.html#RootQuery">RootQuery</a></li><li><a href="global.html#RootSchema">RootSchema</a></li><li><a href="global.html#RootSubscription">RootSubscription</a></li><li><a href="global.html#storeSetup">storeSetup</a></li><li><a href="global.html#User">User</a></li><li><a href="global.html#UserSchema">UserSchema</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sun Dec 03 2017 22:22:28 GMT-0500 (EST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

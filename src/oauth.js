@@ -1,5 +1,8 @@
 import oauthshim from 'oauth-shim';
 
+/**
+ * Setup the oauth configuration
+ */
 const oauthSetup = (app) => {
 
 	app.all('/oauthproxy', oauthshim);

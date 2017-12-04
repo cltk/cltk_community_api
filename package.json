@@ -39,12 +39,16 @@
     "passport": "^0.3.2",
     "passport-jwt": "^2.2.1",
     "passport-local-mongoose": "^4.0.0",
+    "pm2": "^2.8.0",
     "react-autocomplete": "^1.5.10",
     "react-s3-uploader": "^4.2.0",
+    "redis": "^2.8.0",
+    "redis-dataloader": "^0.4.2",
     "request": "^2.81.0",
     "subscriptions-transport-ws": "^0.8.1",
     "twitter": "^1.7.1",
     "uuid": "^3.1.0",
+    "winston": "^2.4.0",
     "zxcvbn": "^4.4.2"
   },
   "devDependencies": {
@@ -70,18 +74,22 @@
     "faucet": "^0.0.1",
     "flow-bin": "^0.51.0",
     "jest": "^20.0.4",
+    "jsdoc": "^3.5.5",
     "nodemon": "^1.11.0",
     "regenerator-runtime": "^0.10.5",
     "shortid": "^2.2.8"
   },
   "scripts": {
     "lint": "eslint .",
-    "test": "jest --config ./jest.config.js",
-    "server": "NODE_ENV=development nodemon ./src/index.js --exec babel-node",
-    "start": "npm run server",
+    "test": "jest --config ./jest.config.js ./src",
+    "start": "NODE_ENV=development nodemon src --exec babel-node",
     "db-seed": "babel-node scripts/run-db-seed.js",
     "db-clear": "babel-node scripts/run-db-clear.js",
-    "db-setup": "npm run db-clear && npm run db-seed"
+    "db-setup": "npm run db-clear && npm run db-seed",
+    "build": "babel server -d build/src",
+    "execute": "yarn pm2 start build/src --name express",
+    "build-and-execute": "concurrently \"yarn execute\" \"yarn build\"",
+    "jsdoc": "jsdoc src -r -c .jsdoc.json -d docs"
   },
   "repository": {
     "type": "git",

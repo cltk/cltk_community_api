@@ -8,7 +8,7 @@ import User from '../../models/user';
 import { validateTokenOAuth1, validateTokenOAuth2 } from '../../authentication';
 
 // email
-import OrpheusEmail from '../../email';
+import EmailManager from '../../email';
 
 
 export const registerPWD = (res, username, password) => {
@@ -21,7 +21,7 @@ export const registerPWD = (res, username, password) => {
 		const user = { _id: account._id };
 
 		// send verification email
-		OrpheusEmail.sendVerificationEmail(username);
+		// EmailManager.sendVerificationEmail(username);
 
 		return res.json(generateJWT(user));
 	});

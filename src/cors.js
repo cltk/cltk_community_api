@@ -1,6 +1,7 @@
 import cors from 'cors';
 
 import DataLoader from 'dataloader';
+import createRedisDataLoader from 'redis-dataloader';
 
 // model
 import Project from './models/project';
@@ -8,7 +9,19 @@ import Project from './models/project';
 
 export default function corsSetup(app, redisClient) {
 
-	const whitelist = ['http://generate-manifests.orphe.us'];
+	const RedisDataLoader = createRedisDataLoader({ redis: redisClient });
+
+	const projectLoader = new RedisDataLoader(
+		'project',
+		new DataLoader(hostnames => Promise.all(hostnames.map(Project.findByHostname)), {
+			cache: false
+		}), {
+			cache: false,
+			// expire: 60,
+		}
+	);
+
+	const whitelist = ['http://api.hedera.orphe.us'];
 
 	if (process.env.NODE_ENV === 'development') {
 		whitelist.push(process.env.CLIENT_SERVER);
@@ -23,18 +36,18 @@ export default function corsSetup(app, redisClient) {
 		};
 
 		const hostname = req.hostname;
-		let project;
-		// const project = await projectLoader.load(hostname);
+		const project = await projectLoader.load(hostname);
 
 		if (project) {
-			corsOptions.origin = true;
+			corsOptions.origin = false;
 			req.project = project;
 		} else if (whitelist.indexOf(req.header('Origin')) !== -1) {
-			corsOptions.origin = true;
+			corsOptions.origin = false;
 			req.project = null;
 
-			console.error('Project white listed but not in the database! Graphql may have limited functionality.');
+			// console.error('Project white listed but not in the database! Graphql may have limited functionality.');
 
+			/*
 			if (process.env.NODE_ENV === 'development') {
 				// TODO - delete this and rewrite to generate a project on development and on start of server
 				req.project = {
@@ -44,11 +57,15 @@ export default function corsSetup(app, redisClient) {
 					users: [],
 				};
 			}
+			*/
 		}
 
 		callback(null, corsOptions);
 	}
 
 	// CORS:
-	app.use(cors(corsOptionsDelegate));
+	app.use(cors({
+		origin: ['http://api.orphe.us', 'http://orphe.us', 'http://orpheus.local:3000', 'http://localhost:3000'],
+		credentials: true,
+	}));
 }

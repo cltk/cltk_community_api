@@ -2,6 +2,9 @@ import aws from 'aws-sdk';
 import S3Router from 'react-s3-uploader/s3router';
 
 
+/**
+ * Setup the AWS s3 file uploader functions
+ */
 export default function s3Setup(app) {
 	aws.config.update({
 		accessKeyId: process.env.AWS_ACCESS_KEY_ID,

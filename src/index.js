@@ -28,11 +28,14 @@ import setupGraphql from './graphql';
 // S3
 import s3Setup from './s3';
 
+// Redis
+import redisSetup from './redis';
+
 // OAuth setup
 import oauthSetup from './oauth';
 
 // email
-import OrpheusEmail from './email';
+import EmailManager from './email';
 
 // Routes
 import authenticationRouter from './authentication/routes';
@@ -44,6 +47,8 @@ dotenvSetup();
 const app = express();
 
 const db = dbSetup();
+
+const redisClient = redisSetup();
 
 app.set('port', (process.env.PORT || 3001));
 
@@ -67,10 +72,10 @@ app.use(session({
 }));
 
 // CORS setup
-corsSetup(app);
+corsSetup(app, redisClient);
 
 // Authentication setup
-authSetup(app);
+authSetup(app, redisClient);
 
 // GraphQl setup
 setupGraphql(app);
@@ -80,9 +85,6 @@ s3Setup(app);
 
 // OAuth setup
 oauthSetup(app);
-
-// Email setup
-OrpheusEmail.setupTransport();
 
 // Routes
 app.use('/auth', authenticationRouter);
