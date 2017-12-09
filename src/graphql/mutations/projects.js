@@ -1,11 +1,11 @@
 import { GraphQLString, GraphQLNonNull, GraphQLID } from 'graphql';
 
 // types
-import ProjectType, { ProjectInputType } from '../types/models/project';
-import { RemoveType } from '../types';
+import ProjectType, { ProjectInputType } from '../types/project';
+import RemoveType from '../types/remove';
 
-// models
-import Project from '../../models/project';
+// Logic
+import ProjectService from '../logic/projects';
 
 
 const projectMutationFields = {
@@ -17,30 +17,12 @@ const projectMutationFields = {
 				type: new GraphQLNonNull(ProjectInputType)
 			}
 		},
-		async resolve(parent, { project }, context) {
-
-			// Initiate new project
-			const NewProject = new Project(project);
-
-			const projectUser = {
-				userId: context.user._id,
-				role: 'admin'
-			};
-
-			NewProject.users.push(projectUser);
-
-			// Validte permissions
-			// check user permissions
-			try {
-				const userIsAdmin = await NewItem.validateUser(context.user._id);
-				// if (!userIsAdmin) throw new PermissionError();
-			} catch (err) {
-				// throw new PermissionError();
-			}
-
-			return NewProject.save();
-		}
+		async resolve(parent, { project }, { token }) {
+			const projectService = new ProjectService(token);
+			return await projectService.create(project);
+		},
 	},
+
 	projectUpdate: {
 		type: ProjectType,
 		description: 'Update project',
@@ -52,34 +34,9 @@ const projectMutationFields = {
 				type: new GraphQLNonNull(GraphQLID),
 			}
 		},
-		async resolve(parent, { project, projectId }, context) {
-			// if user is not logged in
-			if (!context.user) throw new AuthenticationError();
-
-			// Initiate project
-			const FoundProject = await Project.findById(projectId);
-			if (!FoundProject) throw new ArgumentError({ data: { field: 'projectId' } });
-
-			// validate permissions
-			try {
-				const userIsAdmin = await FoundProject.validateUser(context.user._id);
-				if (!userIsAdmin) throw new PermissionsError();
-			} catch (err) {
-				throw new PermissionError();
-			}
-
-			// Perform action
-			// update project
-			Object.keys(project).forEach((key) => {
-				FoundProject[key] = item[key];
-			});
-
-			// Save new project
-			try {
-				return await FoundProject.save();
-			} catch (err) {
-				handleMongooseError(err);
-			}
+		async resolve(parent, { project }, { token }) {
+			const projectService = new ProjectService(token);
+			return await projectService.update(project);
 		}
 	},
 
@@ -87,38 +44,15 @@ const projectMutationFields = {
 		type: RemoveType,
 		description: 'Remove project',
 		args: {
-			projectId: {
+			_id: {
 				type: new GraphQLNonNull(GraphQLID),
 			}
 		},
-		async resolve (parent, { projectId }, { user, project }) {
-			// if user is not logged in
-			if (!user) throw new AuthenticationError();
-
-			// initiate project
-			const FoundProject = await Project.findById(projectId);
-			if (!FoundProject) throw new ArgumentError({ data: { field: 'projectId' } });
-
-			// validate permissions
-			// try {
-			// 	const userIsAdmin = await FoundProject.validateUser(user._id);
-			// 	if (!userIsAdmin) throw new PermissionError();
-			// } catch (err) {
-			// 	throw new PermissionError();
-			// }
-
-			// perform action
-			// save new project
-			try {
-				await FoundProject.remove();
-				return {
-					_id: projectId,
-				};
-			} catch (err) {
-				handleMongooseError(err);
-			}
-		}
-	}
+		async resolve (parent, { _id }, { token }) {
+			const projectService = new ProjectService(token);
+			return await projectService.remove(_id);
+		},
+	},
 };
 
 export default projectMutationFields;

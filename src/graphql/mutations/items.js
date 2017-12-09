@@ -1,8 +1,8 @@
 import { GraphQLNonNull, GraphQLID } from 'graphql';
 
 // types
-import ItemType, { ItemInputType } from '../types/models/item';
-import { RemoveType } from '../types';
+import ItemType, { ItemInputType } from '../types/item';
+import RemoveType from '../types/remove';
 
 // models
 import Item from '../../models/item';

@@ -1,7 +1,7 @@
 import createType from 'mongoose-schema-to-graphql';
 
 // models
-import MiradorManifest from '../../../models/miradorManifest';
+import MiradorManifest from '../../models/miradorManifest';
 
 const config = {
 	name: 'miradorManifestType',

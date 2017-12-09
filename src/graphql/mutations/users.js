@@ -1,9 +1,8 @@
 import { GraphQLString, GraphQLNonNull, GraphQLID } from 'graphql';
 
 // types
-import UserType from '../types/models/user';
-
-import { RemoveType } from '../types';
+import UserType from '../types/user';
+import RemoveType from '../types/remove';
 
 // models
 import User from '../../models/user';

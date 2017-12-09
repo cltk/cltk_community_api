@@ -1,7 +1,7 @@
 import { GraphQLString, GraphQLNonNull } from 'graphql';
 
 // types
-import miradorManifestType from '../types/models/miradorManifest';
+import miradorManifestType from '../types/miradorManifest';
 
 // models
 import MiradorManifest from '../../models/miradorManifest';

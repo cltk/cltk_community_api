@@ -1,8 +1,8 @@
 import { GraphQLString, GraphQLNonNull, GraphQLID } from 'graphql';
 
 // types
-import CollectionType, { CollectionInputType } from '../types/models/collection';
-import { RemoveType } from '../types';
+import CollectionType, { CollectionInputType } from '../types/collection';
+import RemoveType from '../types/remove';
 
 // models
 import Collection from '../../models/collection';

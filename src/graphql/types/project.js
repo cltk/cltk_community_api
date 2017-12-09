@@ -2,8 +2,8 @@ import { GraphQLObjectType, GraphQLList, GraphQLID, GraphQLString } from 'graphq
 import createType from 'mongoose-schema-to-graphql';
 
 // models
-import Project from '../../../models/project';
-import Collection from '../../../models/collection';
+import Project from '../../models/project';
+import Collection from '../../models/collection';
 
 // types
 import CollectionType from './collection';

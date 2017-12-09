@@ -1,7 +1,7 @@
 import createType from 'mongoose-schema-to-graphql';
 
 // models
-import User from '../../../models/user';
+import User from '../../models/user';
 
 
 const config = {

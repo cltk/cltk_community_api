@@ -24,7 +24,7 @@ import User from './models/user';
 const RootSchema = new GraphQLSchema({
 	query: RootQuery,
 	mutation: RootMutation,
-	subscription: RootSubscription,
+	// subscription: RootSubscription,
 });
 
 // mask error messages
@@ -58,9 +58,13 @@ export default function setupGraphql(app) {
 
 	app.use('/graphiql', graphiqlExpress({
 	 	endpointURL: '/graphql',
-	 	subscriptionsEndpoint: `ws://${process.env.WS_SERVER_HOST}:${process.env.WS_SERVER_PORT}/${process.env.WS_SERVER_URI}`
+	 	// subscriptionsEndpoint: `ws://${process.env.WS_SERVER_HOST}:${process.env.WS_SERVER_PORT}/${process.env.WS_SERVER_URI}`
 	}));
 
+	/**
+	 * Websockets server
+	 */
+	/*
 	// Wrap the Express server
 	const ws = createServer(app);
 	ws.listen(process.env.WS_SERVER_PORT, () => {
@@ -75,4 +79,5 @@ export default function setupGraphql(app) {
 			path: `/${process.env.WS_SERVER_URI}`,
 		});
 	});
+	*/
 }

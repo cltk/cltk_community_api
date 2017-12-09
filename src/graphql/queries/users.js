@@ -1,8 +1,8 @@
 import { GraphQLID, GraphQLNull, GraphQLList } from 'graphql';
 
 // types
-import UserType from '../types/models/user';
-import ProjectType from '../types/models/project';
+import UserType from '../types/user';
+import ProjectType from '../types/project';
 
 // models
 import Project from '../../models/project';

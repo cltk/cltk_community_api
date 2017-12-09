@@ -1,10 +1,10 @@
 import { GraphQLString, GraphQLNonNull, GraphQLObjectType } from 'graphql';
 
 // types
-import miradorType from '../types/models/miradorManifest';
+import miradorType from '../types/miradorManifest';
 
 /**
- * Mirador manifest queries 
+ * Mirador manifest queries
  * @type {Object}
  * @property {Object} miradorById 	Get mirador by _id
  */

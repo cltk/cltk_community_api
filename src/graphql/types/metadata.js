@@ -2,7 +2,7 @@ import { GraphQLList, GraphQLID } from 'graphql';
 import createType from 'mongoose-schema-to-graphql';
 
 // schema
-import { MetadataSchema } from '../../../models/item';
+import { MetadataSchema } from '../../models/item';
 
 const config = {
 	name: 'MetadataType',

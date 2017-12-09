@@ -2,7 +2,7 @@ import { GraphQLList, GraphQLID } from 'graphql';
 import createType from 'mongoose-schema-to-graphql';
 
 // models
-import File from '../../../models/file';
+import File from '../../models/file';
 
 // types
 
