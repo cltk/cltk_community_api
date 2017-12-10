@@ -38,9 +38,16 @@ export const pubsub = new RedisPubSub({
 });
 
 const getGraphQLContext = req => {
+	let token;
+	let hostname = req.hostname;
+
+	if ('authorization' in req.headers) {
+		token = req.headers.authorization;
+	}
+
 	return ({
-		user: req.user,
-		project: req.project,
+		token,
+		hostname,
 	});
 };
 

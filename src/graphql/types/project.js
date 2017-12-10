@@ -71,7 +71,7 @@ const configInput = {
 	description: 'Project Schema base create input type',
 	class: 'GraphQLInputObjectType',
 	schema: Project.schema,
-	exclude: ['_id', 'slug', 'createdAt', 'updatedAt'],
+	exclude: [],
 };
 
 const ProjectType = createType(config);

@@ -16,7 +16,7 @@ const setupJWTStrategy = (app, redisClient) => {
 			cache: false
 		}), {
 			cache: false,
-			// expire: 60,
+			expire: 60,
 		}
 	);
 
@@ -28,10 +28,8 @@ const setupJWTStrategy = (app, redisClient) => {
 	};
 
 	passport.use(new JwtStrategy(JWTOptions, async (jwtPayload, done) => {
-
 		try {
 			const user = await userLoader.load(jwtPayload._id);
-
 			if (user) {
 				done(null, user);
 			} else {

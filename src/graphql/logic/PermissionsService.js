@@ -1,3 +1,5 @@
+import jsonwebtoken from 'jsonwebtoken';
+
 import Project from '../../models/project';
 import User from '../../models/user';
 
@@ -10,11 +12,15 @@ export default class PermissionsService {
 		this.project = null;
 
 		if (token !== 'null' && token) {
-			const decoded = jsonwebtoken.decode(token);
-			this.userId = decoded.user_id;
-			this.userName = decoded.name;
-			this.userAvatar = decoded.picture;
 			this.token = token;
+			console.log(token);
+			const decoded = jsonwebtoken.decode(token);
+			console.log(decoded);
+			if (decoded) {
+				this.userId = decoded.user_id;
+				this.userName = decoded.name;
+				this.userAvatar = decoded.picture;
+			}
 		}
 	}
 

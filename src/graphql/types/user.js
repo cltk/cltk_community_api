@@ -9,7 +9,7 @@ const config = {
 	description: 'User base schema',
 	class: 'GraphQLObjectType',
 	schema: User.schema,
-	exclude: ['password', 'hash', 'salt'],
+	exclude: ['password', 'hash', 'salt', 'resetPasswordToken', 'verified', 'resetPasswordExpires', 'oauthIds', 'twitter', 'facebook'],
 	extend: {}
 };
 
@@ -17,5 +17,8 @@ const UserType = createType(config);
 
 export default UserType;
 
-// IMPORTANT: no possibility of inputing a user (creating / registering new user) through graphql
-// that is why, there in no input type for user
+/**
+ * N.b. on Users:
+ * IMPORTANT: no possibility of inputing a user (creating / registering new user) through graphql
+ * that is why, there in no input type for user
+ */

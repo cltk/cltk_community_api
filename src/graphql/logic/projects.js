@@ -163,6 +163,10 @@ export default class ProjectService extends PermissionsService {
 
 	/**
 	 * Get project activity feed
+	 * @param {number} projectId - project id for activity 
+	 * @param {number} limit - mongoose orm limit
+	 * @param {number} offset - mongoose orm offset
+	 * @returns {Object[]} activity feed items
 	 */
 	async getActivityFeed({ projectId, limit, offset }) {
 

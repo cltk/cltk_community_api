@@ -6,6 +6,7 @@ import jwt from 'jsonwebtoken';
  * @return {Object}      	Response object
  */
 const generateJWT = (user) => {
+	console.log('generating jwt', user);
 	const token = jwt.sign({
 		_id: user._id,
 		exp: Math.floor(Date.now() / 1000) + (60 * 60 * 24 * 365),
