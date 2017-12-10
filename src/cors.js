@@ -17,11 +17,11 @@ export default function corsSetup(app, redisClient) {
 			cache: false
 		}), {
 			cache: false,
-			// expire: 60,
+			expire: 60,
 		}
 	);
 
-	const whitelist = ['http://api.hedera.orphe.us'];
+	const whitelist = ['http://test.orphe.us', 'http://orphe.us', 'http://test.orpheus.local:3000', 'http://orpheus.local:3000', 'http://localhost:3000'];
 
 	if (process.env.NODE_ENV === 'development') {
 		whitelist.push(process.env.CLIENT_SERVER);
@@ -65,7 +65,7 @@ export default function corsSetup(app, redisClient) {
 
 	// CORS:
 	app.use(cors({
-		origin: ['http://api.orphe.us', 'http://orphe.us', 'http://orpheus.local:3000', 'http://localhost:3000'],
+		origin: whitelist,
 		credentials: true,
 	}));
 }

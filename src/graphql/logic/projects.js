@@ -1,6 +1,14 @@
 import slugify from 'slugify';
+
+// services
 import PermissionsService from './PermissionsService';
+
+// models
 import Project from '../../models/project';
+
+// errors
+import { AuthenticationError } from '../errors';
+
 
 /**
  * Logic-layer service for dealing with projects
@@ -66,26 +74,22 @@ export default class ProjectService extends PermissionsService {
 	 * @returns {Object} created project
 	 */
 	async create(project) {
-		// Initiate new project
-		const NewProject = new Project(project);
+		// if user is not logged in
+		if (!this.userId) throw new AuthenticationError();
 
+		// Initiate new project
+		project.slug = slugify(project.title);
+		const newProject = new Project(project);
+
+		// Add user to project
 		const projectUser = {
 			userId: this.userId,
 			role: 'admin',
 		};
+		newProject.users.push(projectUser);
 
-		NewProject.users.push(projectUser);
-
-		// Validte permissions
-		// check user permissions
-		try {
-			const userIsAdmin = await NewItem.validateUser(context.user._id);
-			// if (!userIsAdmin) throw new PermissionError();
-		} catch (err) {
-			// throw new PermissionError();
-		}
-
-		return await NewProject.save();
+		// save new project
+		return await newProject.save();
 	}
 
 	/**
@@ -95,63 +99,76 @@ export default class ProjectService extends PermissionsService {
 	 */
 	async update(project) {
 		// if user is not logged in
-		if (!context.user) throw new AuthenticationError();
+		if (!this.userId) throw new AuthenticationError();
 
 		// Initiate project
-		const FoundProject = await Project.findById(projectId);
-		if (!FoundProject) throw new ArgumentError({ data: { field: 'projectId' } });
+		const foundProject = await Project.findById(project._id);
+		if (!foundProject) throw new ArgumentError({ data: { field: 'project._id' } });
 
 		// validate permissions
-		try {
-			const userIsAdmin = await FoundProject.validateUser(context.user._id);
-			if (!userIsAdmin) throw new PermissionsError();
-		} catch (err) {
-			throw new PermissionError();
-		}
+		const userIsAdmin = this.userIsProjectAdmin(foundProject);
+		if (!userIsAdmin) throw new PermissionsError();
 
-		// Perform action
-		// update project
-		Object.keys(project).forEach((key) => {
-			FoundProject[key] = item[key];
-		});
+		// perform action
+		Project.update({ _id: project._id }, { $set: project });
 
-		// Save new project
-		try {
-			return await FoundProject.save();
-		} catch (err) {
-			handleMongooseError(err);
-		}
+		// TODO
+		// error handling
+
+		// return updated project
+		return await Project.findById(project._id);
 	}
 
 	/**
 	 * Remove a project
 	 * @param {string} _id - id of project to Remove
+	 * @returns {boolean} remove result
 	 */
 	async remove(_id) {
 		// if user is not logged in
-		if (!user) throw new AuthenticationError();
+		if (!this.userId) throw new AuthenticationError();
 
 		// initiate project
-		const FoundProject = await Project.findById(projectId);
-		if (!FoundProject) throw new ArgumentError({ data: { field: 'projectId' } });
+		const foundProject = await Project.findById(projectId);
+		if (!foundProject) throw new ArgumentError({ data: { field: 'projectId' } });
 
 		// validate permissions
-		// try {
-		// 	const userIsAdmin = await FoundProject.validateUser(user._id);
-		// 	if (!userIsAdmin) throw new PermissionError();
-		// } catch (err) {
-		// 	throw new PermissionError();
-		// }
+		const userIsAdmin = this.userIsProjectAdmin(foundProject);
+		if (!userIsAdmin) throw new PermissionsError();
 
 		// perform action
-		// save new project
-		try {
-			await FoundProject.remove();
-			return {
-				_id: projectId,
-			};
-		} catch (err) {
-			handleMongooseError(err);
-		}
+		const result = await Project.remove({ _id });
+
+		// TODO
+		// error handling
+
+		// respond with result
+		return {
+			result,
+		};
+	}
+
+	/**
+	 * Get project collections
+	 * @param {string} projectId - id of project
+	 * @param {number} limit - mongoose orm limit
+	 * @param {number} offset - mongoose orm offset
+	 * @returns {Object[]} collections for project
+	 */
+	async getCollections({ projectId, limit, offset }) {
+		// TODO:
+		// get paginated collections by project Id
+		return Collection.findByProjectId(project._id);
+	}
+
+	/**
+	 * Get project activity feed
+	 */
+	async getActivityFeed({ projectId, limit, offset }) {
+
+		// TODO:
+		// get activity feed from collections, items, articles, texts, and comments
+
+	 return [];
 	}
 }

@@ -3,74 +3,36 @@ import User from '../../models/user';
 
 export default class PermissionsService {
 
-	constructor(_id) {
-		this._id = _id;
-		this.user = null;
+	constructor(token) {
+		this.userId;
+		this.userName;
+		this.userAvatar;
 		this.project = null;
-		this.userRolesForProject = [];
+
+		if (token !== 'null' && token) {
+			const decoded = jsonwebtoken.decode(token);
+			this.userId = decoded.user_id;
+			this.userName = decoded.name;
+			this.userAvatar = decoded.picture;
+			this.token = token;
+		}
 	}
 
-	hasRights(role, callback) {
 
-		return new Promise((resolve, reject) => {
+	async _getUserRoleForProject(project) {
+		let userRoleForProject;
 
-			this._checkRole(role).then(() => {
-
-				if (typeof callback === 'function') {
-					return callback('User is admin');
-				}
-
-				resolve('User is admin');
-
-			}).catch((err) => {
-
-				if (typeof callback === 'function') {
-					return callback();
-				}
-
-				reject(err);
-
-			});
-
-		});
-
-	}
-
-	_checkRole(role) {
-
-		return new Promise((resolve, reject) => {
-
-			const staffLevel = PermissionsService._convertRole(role);
-
-			User.findById(this._id, () => {
-
-				if (!user) {
-					return reject('User does not exist');
-				}
-
-				if (user.role < staffLevel) {
-					reject('User role mismatch');
-				}
-
-				resolve('User role match');
-
-			});
-		});
-	}
-
-	static _convertRole(role) {
-
-		if (role === 'admin') {
-			return 3;
-		} else if (role === 'editor') {
-			return 2;
-		} else if (role === 'subscriber') {
-			return 1;
+		// TODO add other roles
+		// Right now only one role
+		const userIsAdmin = await project.validateUser(this.userId);
+		if (userIsAdmin) {
+			userRoleForProject = 'admin'
 		}
 
-		return 0;
-
+		return userRoleForProject;
 	}
 
-
+	userIsProjectAdmin(project) {
+		return this._getUserRoleForProject(project) === 'admin';
+	}
 }

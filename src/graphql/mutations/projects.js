@@ -30,9 +30,6 @@ const projectMutationFields = {
 			project: {
 				type: new GraphQLNonNull(ProjectInputType),
 			},
-			projectId: {
-				type: new GraphQLNonNull(GraphQLID),
-			}
 		},
 		async resolve(parent, { project }, { token }) {
 			const projectService = new ProjectService(token);

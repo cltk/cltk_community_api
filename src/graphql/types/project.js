@@ -1,13 +1,18 @@
 import { GraphQLObjectType, GraphQLList, GraphQLID, GraphQLString } from 'graphql';
 import createType from 'mongoose-schema-to-graphql';
 
+// logic
+import ProjectService from '../logic/projects';
+
 // models
 import Project from '../../models/project';
 import Collection from '../../models/collection';
 
 // types
 import CollectionType from './collection';
+import ActivityItemType from './activityItem';
 import UserType from './user';
+
 
 const config = {
 	name: 'ProjectType',
@@ -18,8 +23,25 @@ const config = {
 		collections: {
 			type: new GraphQLList(CollectionType),
 			description: 'Get all project collection',
-			resolve(project, args, context) {
-				return Collection.findByProjectId(project._id);
+			resolve(parent, { limit, offset }, { token }) {
+				const projectService = new ProjectService(token);
+				return projectService.getCollections({
+					projectId: parent._id,
+					limit,
+					offset,
+				});
+			}
+		},
+		activity: {
+			type: new GraphQLList(ActivityItemType),
+			description: 'Get all project collection',
+			resolve(parent, { limit, offset }, { token }) {
+				const projectService = new ProjectService(token);
+				return projectService.getActivityFeed({
+					projectId: parent._id,
+					limit,
+					offset,
+				});
 			}
 		},
 		users: {
@@ -37,11 +59,11 @@ const config = {
 					}
 				}
 			}),
-			resolve(project, args, context) {
+			resolve(parent, args, { token }) {
 				return project.users;
 			}
-		}
-	}
+		},
+	},
 };
 
 const configInput = {
