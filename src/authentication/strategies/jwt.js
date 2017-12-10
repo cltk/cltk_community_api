@@ -29,7 +29,7 @@ const setupJWTStrategy = (app, redisClient) => {
 
 	passport.use(new JwtStrategy(JWTOptions, async (jwtPayload, done) => {
 		try {
-			const user = await userLoader.load(jwtPayload._id);
+			const user = await userLoader.load(jwtPayload.userId);
 			if (user) {
 				done(null, user);
 			} else {

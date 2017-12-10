@@ -42,7 +42,7 @@ const getGraphQLContext = req => {
 	let hostname = req.hostname;
 
 	if ('authorization' in req.headers) {
-		token = req.headers.authorization;
+		token = req.headers.authorization.replace('JWT ', '');
 	}
 
 	return ({

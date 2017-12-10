@@ -19,12 +19,11 @@ export const registerPWD = (res, username, password) => {
 		if (err) {
 			return res.status(200).send(err);
 		}
-		const user = { _id: account._id };
 
 		// send verification email
 		// EmailManager.sendVerificationEmail(username);
 
-		return res.json(generateJWT(user));
+		return res.json(generateJWT(account));
 	});
 };
 

@@ -13,13 +13,11 @@ export default class PermissionsService {
 
 		if (token !== 'null' && token) {
 			this.token = token;
-			console.log(token);
 			const decoded = jsonwebtoken.decode(token);
-			console.log(decoded);
 			if (decoded) {
-				this.userId = decoded.user_id;
-				this.userName = decoded.name;
-				this.userAvatar = decoded.picture;
+				this.userId = decoded.userId;
+				this.userName = decoded.userName;
+				this.userAvatar = decoded.userAvatar;
 			}
 		}
 	}

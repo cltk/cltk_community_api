@@ -6,9 +6,10 @@ import jwt from 'jsonwebtoken';
  * @return {Object}      	Response object
  */
 const generateJWT = (user) => {
-	console.log('generating jwt', user);
 	const token = jwt.sign({
-		_id: user._id,
+		userId: user._id,
+		userName: user.name,
+		userAvatar: user.avatar,
 		exp: Math.floor(Date.now() / 1000) + (60 * 60 * 24 * 365),
 	}, process.env.JWT_SECRET);
 	return { success: true, token: `JWT ${token}`, username: user.username, userId: user._id };
