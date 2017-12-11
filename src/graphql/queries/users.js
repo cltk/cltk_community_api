@@ -16,14 +16,6 @@ const userQueryFields = {
 			const userService = new UserService(token);
 			return await userService.getProfile();
 		}
-	},
-	userProjects: {
-		type: new GraphQLList(ProjectType),
-		description: 'Get users associated with currently signed-in user',
-		async resolve(obj, {}, { token }) {
-			const userService = new UserService(token);
-			return await userService.getProjects();
-		}
 	}
 };
 

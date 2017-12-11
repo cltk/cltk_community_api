@@ -44,6 +44,23 @@ export default class ProjectService extends PermissionsService {
 	}
 
 	/**
+	 * Get a list of projects that a user belongs to
+	 * @param {number} offset
+	 * @param {number} limit
+	 * @returns {Object[]} array of projects
+	 */
+	async getUserProjects({ offset, limit }) {
+		const args = {
+			'users.userId': this.userId,
+		};
+
+		return await Project.find(args)
+			.sort({ slug: 1})
+			.skip(offset)
+			.limit(limit);
+	}
+
+	/**
 	 * Get project
 	 * @param {number} _id - id of project
 	 * @param {string} slug - slug of project
@@ -163,7 +180,7 @@ export default class ProjectService extends PermissionsService {
 
 	/**
 	 * Get project activity feed
-	 * @param {number} projectId - project id for activity 
+	 * @param {number} projectId - project id for activity
 	 * @param {number} limit - mongoose orm limit
 	 * @param {number} offset - mongoose orm offset
 	 * @returns {Object[]} activity feed items

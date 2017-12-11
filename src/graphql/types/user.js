@@ -1,6 +1,10 @@
+import { GraphQLObjectType, GraphQLList, GraphQLID, GraphQLString } from 'graphql';
 import createType from 'mongoose-schema-to-graphql';
 
-// models
+// Logic
+import UserService from '../logic/users';
+
+// Model
 import User from '../../models/user';
 
 
@@ -10,7 +14,6 @@ const config = {
 	class: 'GraphQLObjectType',
 	schema: User.schema,
 	exclude: ['password', 'hash', 'salt', 'resetPasswordToken', 'verified', 'resetPasswordExpires', 'oauthIds', 'twitter', 'facebook'],
-	extend: {}
 };
 
 const configInput = {

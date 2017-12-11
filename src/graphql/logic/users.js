@@ -18,22 +18,6 @@ import { AuthenticationError } from '../errors';
 export default class UserService extends PermissionsService {
 
 	/**
-	 * Get user projects
-	 * @param {number} limit - mongoose orm limit
-	 * @param {number} offset - mongoose orm offset
-	 * @returns {Object[]} collections for user
-	 */
-	async getProjects({ limit, offset }) {
-		// TODO:
-		// get paginated projects
-		return await Project.find({
-			$elemMatch: {
-				'users.userId': this.userId,
-			}
-		});
-	}
-
-	/**
 	 * Get user activity feed
 	 * @param {number} limit - mongoose orm limit
 	 * @param {number} offset - mongoose orm offset

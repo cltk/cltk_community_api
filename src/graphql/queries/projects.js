@@ -43,6 +43,22 @@ const projectQueryFields = {
 			return projectService.getProjects({ limit, offset });
 		}
 	},
+	userProjects: {
+		type: new GraphQLList(ProjectType),
+		description: 'Get list of projects that a user belongs to',
+		args: {
+			limit: {
+				type: GraphQLInt,
+			},
+			offset: {
+				type: GraphQLInt,
+			},
+		},
+		resolve(parent, { limit, offset }, { token }) {
+			const projectService = new ProjectService(token);
+			return projectService.getUserProjects({ limit, offset });
+		}
+	},
 };
 
 export default projectQueryFields;
