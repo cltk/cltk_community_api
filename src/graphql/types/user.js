@@ -13,12 +13,16 @@ const config = {
 	extend: {}
 };
 
+const configInput = {
+	name: 'UserInputType',
+	description: 'User Schema base create input type',
+	class: 'GraphQLInputObjectType',
+	schema: User.schema,
+	exclude: [],
+};
+
 const UserType = createType(config);
+const UserInputType = createType(configInput);
 
 export default UserType;
-
-/**
- * N.b. on Users:
- * IMPORTANT: no possibility of inputing a user (creating / registering new user) through graphql
- * that is why, there in no input type for user
- */
+export { UserInputType };

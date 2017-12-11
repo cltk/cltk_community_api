@@ -54,4 +54,23 @@ export default class UserService extends PermissionsService {
 	async getProfile() {
 		return await User.findOne({ _id: this.userId });
 	}
+
+	/**
+	 * Update user profile
+	 * @param {Object} user - user record
+	 * @returns {Object} updated user result
+	 */
+	async update(user) {
+		// if user is not logged in
+		if (!this.userId) throw new AuthenticationError();
+
+		// perform action
+		User.update({ _id: this.userId }, { $set: user });
+
+		// TODO
+		// error handling
+
+		// return updated project
+		return await User.findOne({ _id: this.userId });
+	}
 }

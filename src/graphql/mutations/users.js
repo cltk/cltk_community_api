@@ -1,14 +1,12 @@
 import { GraphQLString, GraphQLNonNull, GraphQLID } from 'graphql';
 
 // types
-import UserType from '../types/user';
+import UserType, { UserInputType } from '../types/user';
 import RemoveType from '../types/remove';
 
-// models
-import User from '../../models/user';
+// Logic
+import UserService from '../logic/users';
 
-// errors
-import { AuthenticationError } from '../errors';
 
 const userMutationFields = {
 	userUpdate: {
@@ -16,24 +14,14 @@ const userMutationFields = {
 		description: 'Update user profile',
 		args: {
 			user: {
-				type: UserType,
+				type: UserInputType,
 			}
 		},
-		async resolve(obj, { user }, context) {
-			// if user is not logged in
-			if (!user) throw new AuthenticationError();
-
-			const FoundUser = await User.findById(context.user._id);
-
-			Object.keys(user).forEach((key) => {
-				FoundItem[key] = user[key];
-			});
-
-			try {
-				return await FoundUser.save();
-			} catch (err) {
-				handleMongooseError(err);
-			}
+		async resolve(obj, { user }, { token }) {
+			const userService = new UserService(token);
+			return await userService.update(user);
 		}
 	}
 };
+
+export default userMutationFields;

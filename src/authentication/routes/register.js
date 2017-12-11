@@ -15,6 +15,7 @@ export const registerPWD = (res, username, password) => {
 	User.register(new User({
 		username,
 		name: username,
+		email: username,
 	}), password, (err, account) => {
 		if (err) {
 			return res.status(200).send(err);
