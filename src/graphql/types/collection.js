@@ -3,7 +3,10 @@ import createType from 'mongoose-schema-to-graphql';
 
 // models
 import Collection from '../../models/collection';
-import Item from '../../models/item';
+
+// logic
+import CollectionService from '../logic/collections';
+import ItemService from '../logic/items';
 
 // types
 import ItemType, { ItemInputType } from './item';
@@ -16,31 +19,44 @@ const config = {
 	schema: Collection.schema,
 	exclude: [],
 	extend: {
+		item: {
+			type: ItemType,
+			description: 'Get item document',
+			args: {
+				_id: {
+					type: GraphQLString,
+				},
+				slug: {
+					type: GraphQLString,
+				},
+				hostname: {
+					type: GraphQLString,
+				},
+			},
+			resolve(parent, { _id, slug, hostname }, { token }) {
+				const itemService = new ItemService(token);
+				return itemService.getItem({ collectionId: parent._id, _id, slug, hostname });
+			}
+		},
 		items: {
 			type: new GraphQLList(ItemType),
+			description: 'Get list of items',
 			args: {
-				skip: {
-					type: GraphQLInt,
+				textsearch: {
+					type: GraphQLString,
 				},
 				limit: {
 					type: GraphQLInt,
-				}
-			},
-			resolve(collection, { skip = 0, limit = 10 }) {
-				return Item.find({}).skip(skip).limit(limit);
-			}
-		},
-		item: {
-			type: ItemType,
-			args: {
-				_id: {
-					type: GraphQLID,
+				},
+				offset: {
+					type: GraphQLInt,
 				},
 			},
-			resolve(collection, { _id }) {
-				return Item.findById(_id);
+			resolve(parent, { textsearch, limit, offset }, { token }) {
+				const itemService = new ItemService(token);
+				return itemService.getItems({ collectionId: parent._id, textsearch, limit, offset });
 			}
-		}
+		},
 	}
 };
 

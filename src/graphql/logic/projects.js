@@ -70,6 +70,10 @@ export default class ProjectService extends PermissionsService {
 	async getProject({ _id, slug, hostname }) {
 		const where = {};
 
+		if (!_id && !slug && !hostname) {
+			return null;
+		}
+
 		if (_id) {
 			where._id = _id;
 		}

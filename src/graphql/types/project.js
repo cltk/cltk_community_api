@@ -1,12 +1,12 @@
-import { GraphQLObjectType, GraphQLList, GraphQLID, GraphQLString } from 'graphql';
+import { GraphQLObjectType, GraphQLList, GraphQLID, GraphQLString, GraphQLInt } from 'graphql';
 import createType from 'mongoose-schema-to-graphql';
-
-// logic
-import ProjectService from '../logic/projects';
 
 // models
 import Project from '../../models/project';
-import Collection from '../../models/collection';
+
+// logic
+import ProjectService from '../logic/projects';
+import CollectionService from '../logic/collections';
 
 // types
 import CollectionType from './collection';
@@ -20,16 +20,42 @@ const config = {
 	class: 'GraphQLObjectType',
 	schema: Project.schema,
 	extend: {
+		collection: {
+			type: CollectionType,
+			description: 'Get collection document',
+			args: {
+				_id: {
+					type: GraphQLString,
+				},
+				slug: {
+					type: GraphQLString,
+				},
+				hostname: {
+					type: GraphQLString,
+				},
+			},
+			resolve(parent, { _id, slug, hostname }, { token }) {
+				const collectionService = new CollectionService(token);
+				return collectionService.getCollection({ projectId: parent._id, _id, slug, hostname });
+			}
+		},
 		collections: {
 			type: new GraphQLList(CollectionType),
-			description: 'Get all project collection',
-			resolve(parent, { limit, offset }, { token }) {
-				const projectService = new ProjectService(token);
-				return projectService.getCollections({
-					projectId: parent._id,
-					limit,
-					offset,
-				});
+			description: 'Get list of collections',
+			args: {
+				textsearch: {
+					type: GraphQLString,
+				},
+				limit: {
+					type: GraphQLInt,
+				},
+				offset: {
+					type: GraphQLInt,
+				},
+			},
+			resolve(parent, { textsearch, limit, offset }, { token }) {
+				const collectionService = new CollectionService(token);
+				return collectionService.getCollections({ projectId: parent._id, textsearch, limit, offset });
 			}
 		},
 		activity: {
