@@ -18,13 +18,23 @@ const projectQueryFields = {
 			slug: {
 				type: GraphQLString,
 			},
+		},
+		resolve(parent, { _id, slug }, { token, hostname }) {
+			const projectService = new ProjectService(token);
+			return projectService.getProject({ _id, slug, hostname });
+		}
+	},
+	checkProjectAvailability: {
+		type: ProjectType,
+		description: 'Check if project hostname is available',
+		args: {
 			hostname: {
 				type: GraphQLString,
 			},
 		},
-		resolve(parent, { _id, slug, hostname }, { token }) {
+		resolve(parent, { hostname }, { token }) {
 			const projectService = new ProjectService(token);
-			return projectService.getProject({ _id, slug, hostname });
+			return projectService.getProject({ hostname });
 		}
 	},
 	projects: {

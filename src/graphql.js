@@ -8,14 +8,18 @@ import { RedisPubSub } from 'graphql-redis-subscriptions';
 import { SubscriptionServer } from 'subscriptions-transport-ws';
 import jwt from 'jsonwebtoken';
 
+
+// authentication
 import { jwtAuthenticate } from './authentication';
 
+// graphql
 import RootQuery from './graphql/queries/rootQuery';
 import RootMutation from './graphql/mutations/rootMutation';
 import RootSubscription from './graphql/subscriptions/rootSubscription';
 
 // models
 import User from './models/user';
+
 
 /**
  * Root schema
@@ -39,7 +43,6 @@ export const pubsub = new RedisPubSub({
 
 const getGraphQLContext = req => {
 	let token;
-	let hostname = req.hostname;
 
 	if ('authorization' in req.headers) {
 		token = req.headers.authorization.replace('JWT ', '');
@@ -47,7 +50,7 @@ const getGraphQLContext = req => {
 
 	return ({
 		token,
-		hostname,
+		hostname: req.hostname,
 	});
 };
 

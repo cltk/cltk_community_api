@@ -86,6 +86,8 @@ export default class ProjectService extends PermissionsService {
 			where.hostname = hostname;
 		}
 
+		console.log('hostname', where);
+
 		return await Project.findOne(where);
 	}
 
@@ -99,7 +101,7 @@ export default class ProjectService extends PermissionsService {
 		if (!this.userId) throw new AuthenticationError();
 
 		// Initiate new project
-		project.slug = slugify(project.title);
+		project.slug = slugify(project.title).toLowerCase();
 		const newProject = new Project(project);
 
 		// Add user to project
