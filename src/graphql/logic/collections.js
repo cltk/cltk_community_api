@@ -174,6 +174,6 @@ export default class CollectionService extends PermissionsService {
 		// TODO:
 		// get activity feed from collections, items, articles, texts, and comments
 
-	 return [];
+		return [];
 	}
 }

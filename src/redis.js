@@ -10,7 +10,7 @@ const redisSetup = () => {
 
 	const client = redis.createClient(port, host);
 
-	client.on('error', function (err) {
+	client.on('error', (err) => {
 		console.log(`Error ${err}`);
 	});
 

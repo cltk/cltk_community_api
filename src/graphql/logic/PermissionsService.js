@@ -6,9 +6,9 @@ import User from '../../models/user';
 export default class PermissionsService {
 
 	constructor(token) {
-		this.userId;
-		this.userName;
-		this.userAvatar;
+		this.userId = null;
+		this.userName = null;
+		this.userAvatar = null;
 		this.project = null;
 
 		if (token !== 'null' && token) {
@@ -30,7 +30,7 @@ export default class PermissionsService {
 		// Right now only one role
 		const userIsAdmin = await project.validateUser(this.userId);
 		if (userIsAdmin) {
-			userRoleForProject = 'admin'
+			userRoleForProject = 'admin';
 		}
 
 		return userRoleForProject;

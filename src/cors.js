@@ -36,5 +36,5 @@ export default function corsSetup(app) {
 	app.use(cors(corsOptions));
 
 	// Enable preflight
-	app.options('*', cors())
+	app.options('*', cors());
 }

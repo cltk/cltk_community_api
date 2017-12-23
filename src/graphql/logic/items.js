@@ -161,6 +161,6 @@ export default class ItemService extends PermissionsService {
 		// TODO:
 		// get activity feed from items, items, articles, texts, and comments
 
-	 return [];
+		return [];
 	}
 }

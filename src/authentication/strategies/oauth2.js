@@ -7,7 +7,7 @@ const validateTokenOAuth2 = (accessToken, url) => new Promise((resolve, reject) 
 			statusCode
 		} = res;
 
-		console.log('statusCode', statusCode)
+		console.log('statusCode', statusCode);
 
 		let error;
 		if (statusCode !== 200) {

@@ -28,7 +28,7 @@ export default class UserService extends PermissionsService {
 		// TODO:
 		// get activity feed from collections, items, articles, texts, and comments
 
-	 return [];
+		return [];
 	}
 
 	/**

@@ -19,6 +19,8 @@
   		"error",
   		"tab"
     ],
+		"class-methods-use-this": "off",
+		"no-return-await": "off",
   	"consistent-return": "off",
   	"object-shorthand": "off",
   	"no-absolute-path": "off",

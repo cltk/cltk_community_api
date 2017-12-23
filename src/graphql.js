@@ -41,7 +41,7 @@ export const pubsub = new RedisPubSub({
 	},
 });
 
-const getGraphQLContext = req => {
+const getGraphQLContext = (req) => {
 	let token;
 
 	if ('authorization' in req.headers) {
@@ -67,8 +67,8 @@ export default function setupGraphql(app) {
 	})));
 
 	app.use('/graphiql', graphiqlExpress({
-	 	endpointURL: '/graphql',
-	 	// subscriptionsEndpoint: `ws://${process.env.WS_SERVER_HOST}:${process.env.WS_SERVER_PORT}/${process.env.WS_SERVER_URI}`
+		endpointURL: '/graphql',
+		// subscriptionsEndpoint: `ws://${process.env.WS_SERVER_HOST}:${process.env.WS_SERVER_PORT}/${process.env.WS_SERVER_URI}`
 	}));
 
 	/**

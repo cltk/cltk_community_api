@@ -12,16 +12,16 @@ const ActivityItemType = new GraphQLObjectType({
 	name: 'ActivityItemType',
 	description: 'An activity item in a project activity feed',
 	fields: () => ({
-    user: {
+		user: {
 			type: UserType,
 		},
-    type: {
+		type: {
 			type: GraphQLString,
 		},
-    excerpt: {
+		excerpt: {
 			type: GraphQLString,
 		},
-    url: {
+		url: {
 			type: GraphQLString,
 		},
 	}),
