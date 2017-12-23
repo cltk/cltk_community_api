@@ -72,7 +72,7 @@ app.use(session({
 }));
 
 // CORS setup
-corsSetup(app, redisClient);
+corsSetup(app);
 
 // Authentication setup
 authSetup(app, redisClient);

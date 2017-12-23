@@ -1,25 +1,7 @@
 import cors from 'cors';
 
-import DataLoader from 'dataloader';
-import createRedisDataLoader from 'redis-dataloader';
 
-// model
-import Project from './models/project';
-
-
-export default function corsSetup(app, redisClient) {
-
-	const RedisDataLoader = createRedisDataLoader({ redis: redisClient });
-
-	const projectLoader = new RedisDataLoader(
-		'project',
-		new DataLoader(hostnames => Promise.all(hostnames.map(Project.findByHostname)), {
-			cache: false
-		}), {
-			cache: false,
-			expire: 60,
-		}
-	);
+export default function corsSetup(app) {
 
 	const whitelist = ['http://test.orphe.us', 'http://orphe.us', 'http://test.orpheus.local:3000', 'http://orpheus.local:3000', 'http://localhost:3000'];
 
@@ -27,45 +9,32 @@ export default function corsSetup(app, redisClient) {
 		whitelist.push(process.env.CLIENT_SERVER);
 	}
 
-	// Check if project is white listed or in a database
-	// Set the req.project value
-	async function corsOptionsDelegate(req, callback) {
-		const corsOptions = {
-			origin: false,
-			credentials: true,
-		};
+	const corsOptions = {
+		origin: (origin, callback) => {
+			// TODO: examine why sometimes origin isn't defined
 
-		const hostname = req.hostname;
-		const project = await projectLoader.load(hostname);
-
-		if (project) {
-			corsOptions.origin = false;
-			req.project = project;
-		} else if (whitelist.indexOf(req.header('Origin')) !== -1) {
-			corsOptions.origin = false;
-			req.project = null;
-
-			// console.error('Project white listed but not in the database! Graphql may have limited functionality.');
-
-			/*
-			if (process.env.NODE_ENV === 'development') {
-				// TODO - delete this and rewrite to generate a project on development and on start of server
-				req.project = {
-					title: 'Test Project',
-					hostname: 'localhost',
-					description: 'Test project description quid faciat laetas segetes',
-					users: [],
-				};
+			if (
+				origin
+				&& (
+						origin.endsWith('orphe.us')
+					|| origin.endsWith('orpheus.local:3000')
+					|| origin.endsWith('orpheus.local:3001')
+					|| ~whitelist.indexOf(origin)
+				)
+			) {
+				// callback(null, true);
+			} else {
+				// callback(new Error('Not allowed by CORS'));
 			}
-			*/
-		}
-
-		callback(null, corsOptions);
-	}
-
-	// CORS:
-	app.use(cors({
-		origin: whitelist,
+			
+			callback(null, true);
+		},
 		credentials: true,
-	}));
+	};
+
+	// set cors
+	app.use(cors(corsOptions));
+
+	// Enable preflight
+	app.options('*', cors())
 }
