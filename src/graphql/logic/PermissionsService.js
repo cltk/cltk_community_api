@@ -23,20 +23,23 @@ export default class PermissionsService {
 	}
 
 
-	async _getUserRoleForProject(project) {
+	_getUserRoleForProject(project) {
 		let userRoleForProject;
 
 		// TODO add other roles
 		// Right now only one role
-		const userIsAdmin = await project.validateUser(this.userId);
-		if (userIsAdmin) {
-			userRoleForProject = 'admin';
-		}
+		project.users.forEach((user) => {
+			if (
+				user.userId.toString() === this.userId
+			) {
+				userRoleForProject = user.role;
+			}
+		});
 
 		return userRoleForProject;
 	}
 
 	userIsProjectAdmin(project) {
-		return this._getUserRoleForProject(project) === 'admin';
+		return (this._getUserRoleForProject(project) === 'admin');
 	}
 }

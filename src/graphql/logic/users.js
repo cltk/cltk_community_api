@@ -8,7 +8,7 @@ import User from '../../models/user';
 import Project from '../../models/project';
 
 // errors
-import { AuthenticationError } from '../errors';
+import { AuthenticationError, PermissionError } from '../errors';
 
 
 /**

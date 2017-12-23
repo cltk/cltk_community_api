@@ -7,7 +7,7 @@ import PermissionsService from './PermissionsService';
 import Collection from '../../models/collection';
 
 // errors
-import { AuthenticationError } from '../errors';
+import { AuthenticationError, PermissionError } from '../errors';
 
 
 /**
@@ -108,7 +108,7 @@ export default class CollectionService extends PermissionsService {
 
 		// validate permissions
 		const userIsAdmin = this.userIsCollectionAdmin(foundCollection);
-		if (!userIsAdmin) throw new PermissionsError();
+		if (!userIsAdmin) throw new PermissionError();
 
 		// perform action
 		Collection.update({ _id: collection._id }, { $set: collection });
@@ -135,7 +135,7 @@ export default class CollectionService extends PermissionsService {
 
 		// validate permissions
 		const userIsAdmin = this.userIsCollectionAdmin(foundCollection);
-		if (!userIsAdmin) throw new PermissionsError();
+		if (!userIsAdmin) throw new PermissionError();
 
 		// perform action
 		const result = await Collection.remove({ _id });

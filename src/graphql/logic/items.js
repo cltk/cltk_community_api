@@ -7,7 +7,7 @@ import PermissionsService from './PermissionsService';
 import Item from '../../models/item';
 
 // errors
-import { AuthenticationError } from '../errors';
+import { AuthenticationError, PermissionError } from '../errors';
 
 
 /**
@@ -108,7 +108,7 @@ export default class ItemService extends PermissionsService {
 
 		// validate permissions
 		const userIsAdmin = this.userIsItemAdmin(foundItem);
-		if (!userIsAdmin) throw new PermissionsError();
+		if (!userIsAdmin) throw new PermissionError();
 
 		// perform action
 		Item.update({ _id: item._id }, { $set: item });
@@ -135,7 +135,7 @@ export default class ItemService extends PermissionsService {
 
 		// validate permissions
 		const userIsAdmin = this.userIsItemAdmin(foundItem);
-		if (!userIsAdmin) throw new PermissionsError();
+		if (!userIsAdmin) throw new PermissionError();
 
 		// perform action
 		const result = await Item.remove({ _id });

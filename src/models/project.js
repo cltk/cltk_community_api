@@ -17,6 +17,12 @@ const ProjectSchema = new Schema({
 		trim: true,
 		index: true,
 	},
+	subtitle: {
+		type: String,
+	},
+	description: {
+		type: String,
+	},
 	hostname: {
 		unique: true,
 		required: true,
@@ -24,7 +30,16 @@ const ProjectSchema = new Schema({
 		trim: true,
 		index: true,
 	},
-	description: {
+	email: {
+		type: String,
+	},
+	url: {
+		type: String,
+	},
+	address: {
+		type: String,
+	},
+	phone: {
 		type: String,
 	},
 	users: [{

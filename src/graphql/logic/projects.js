@@ -7,7 +7,7 @@ import PermissionsService from './PermissionsService';
 import Project from '../../models/project';
 
 // errors
-import { AuthenticationError } from '../errors';
+import { AuthenticationError, PermissionError } from '../errors';
 
 
 /**
@@ -130,7 +130,7 @@ export default class ProjectService extends PermissionsService {
 
 		// validate permissions
 		const userIsAdmin = this.userIsProjectAdmin(foundProject);
-		if (!userIsAdmin) throw new PermissionsError();
+		if (!userIsAdmin) throw new PermissionError();
 
 		// perform action
 		Project.update({ _id: project._id }, { $set: project });
@@ -157,7 +157,7 @@ export default class ProjectService extends PermissionsService {
 
 		// validate permissions
 		const userIsAdmin = this.userIsProjectAdmin(foundProject);
-		if (!userIsAdmin) throw new PermissionsError();
+		if (!userIsAdmin) throw new PermissionError();
 
 		// perform action
 		const result = await Project.remove({ _id });
