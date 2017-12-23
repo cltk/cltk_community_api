@@ -40,6 +40,25 @@ export default class UserService extends PermissionsService {
 	}
 
 	/**
+	 * Get project
+	 * @param {number} _id - id of project
+	 * @returns {Object} user record
+	 */
+	async getUser({ _id }) {
+		const where = {};
+
+		if (!_id) {
+			return null;
+		}
+
+		if (_id) {
+			where._id = _id;
+		}
+
+		return await User.findOne(where);
+	}
+
+	/**
 	 * Update user profile
 	 * @param {Object} user - user record
 	 * @returns {Object} updated user result

@@ -7,6 +7,7 @@ import Project from '../../models/project';
 // logic
 import ProjectService from '../logic/projects';
 import CollectionService from '../logic/collections';
+import UserService from '../logic/users';
 
 // types
 import CollectionType from './collection';
@@ -60,7 +61,7 @@ const config = {
 		},
 		activity: {
 			type: new GraphQLList(ActivityItemType),
-			description: 'Get all project collection',
+			description: 'Get project activity',
 			resolve(parent, { limit, offset }, { token }) {
 				const projectService = new ProjectService(token);
 				return projectService.getActivityFeed({
@@ -71,22 +72,23 @@ const config = {
 			}
 		},
 		users: {
-			type: new GraphQLObjectType({
+			type: new GraphQLList(new GraphQLObjectType({
 				name: 'ProjectUsersType',
 				fields: {
 					user: {
 						type: UserType,
-						resolve(projectUser, args, context) {
-							return User.findById(projectUser.userId);
+						resolve(projectUser, args, { token }) {
+							const userService = new UserService(token);
+							return userService.getUser({ _id: projectUser.userId });
 						}
 					},
 					role: {
 						type: GraphQLString,
 					}
 				}
-			}),
+			})),
 			resolve(parent, args, { token }) {
-				return project.users;
+				return parent.users;
 			}
 		},
 	},

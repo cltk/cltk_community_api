@@ -1,4 +1,4 @@
-import slugify from 'slugify';
+import _s from 'underscore.string';
 
 // services
 import PermissionsService from './PermissionsService';
@@ -86,8 +86,6 @@ export default class ProjectService extends PermissionsService {
 			where.hostname = hostname;
 		}
 
-		console.log('hostname', where);
-
 		return await Project.findOne(where);
 	}
 
@@ -101,7 +99,7 @@ export default class ProjectService extends PermissionsService {
 		if (!this.userId) throw new AuthenticationError();
 
 		// Initiate new project
-		project.slug = slugify(project.title).toLowerCase();
+		project.slug = _s.slugify(project.title);
 		const newProject = new Project(project);
 
 		// Add user to project
@@ -132,14 +130,19 @@ export default class ProjectService extends PermissionsService {
 		const userIsAdmin = this.userIsProjectAdmin(foundProject);
 		if (!userIsAdmin) throw new PermissionError();
 
+		// set slug
+		project.slug = _s.slugify(project.title);
+
 		// perform action
-		Project.update({ _id: project._id }, { $set: project });
+		const projectUpdateResult = await Project.update({ _id: project._id }, { $set: project });
 
 		// TODO
 		// error handling
 
 		// return updated project
-		return await Project.findById(project._id);
+		const updatedProject = await Project.findById(project._id);
+		// don't return await
+		return updatedProject;
 	}
 
 	/**
