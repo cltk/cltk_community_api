@@ -24,6 +24,9 @@ const CollectionSchema = new Schema({
 	description: {
 		type: String,
 	},
+	coverImage: {
+		type: String,
+	},
 	projectId: {
 		type: Schema.Types.ObjectId,
 		ref: 'Project',
