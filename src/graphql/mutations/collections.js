@@ -4,9 +4,8 @@ import { GraphQLString, GraphQLNonNull, GraphQLID } from 'graphql';
 import CollectionType, { CollectionInputType } from '../types/collection';
 import RemoveType from '../types/remove';
 
-// models
-import Collection from '../../models/collection';
-import Project from '../../models/project';
+// Logic
+import CollectionService from '../logic/collections';
 
 
 const collectionMutationFields = {
@@ -14,17 +13,16 @@ const collectionMutationFields = {
 		type: CollectionType,
 		description: 'Create a new collection',
 		args: {
+			hostname: {
+				type: new GraphQLNonNull(GraphQLString)
+			},
 			collection: {
 				type: new GraphQLNonNull(CollectionInputType)
-			}
+			},
 		},
-		async resolve(parent, { collection }, context) {
-			const CollectionProject = await Project.findByHostname(context.project.hostname);
-			collection.projectId = CollectionProject._id;
-			// Initiate new collection
-			const NewCollection = new Collection(collection);
-
-			return NewCollection.save();
+		async resolve(_, { hostname, collection }, { token }) {
+			const collectionService = new CollectionService(token);
+			return await collectionService.create(hostname, collection);
 		}
 	},
 	collectionUpdate: {

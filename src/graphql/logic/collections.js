@@ -5,6 +5,7 @@ import PermissionsService from './PermissionsService';
 
 // models
 import Collection from '../../models/collection';
+import Project from '../../models/project';
 
 // errors
 import { AuthenticationError, PermissionError } from '../errors';
@@ -71,25 +72,31 @@ export default class CollectionService extends PermissionsService {
 
 	/**
 	 * Create a new collection
+	 * @param {string} hostname - hostname of the collection for the project
 	 * @param {Object} collection - collection candidate
 	 * @returns {Object} created collection
 	 */
-	async create(collection) {
+	async create(hostname, collection) {
 		// if user is not logged in
 		if (!this.userId) throw new AuthenticationError();
 
-		// Initiate new collection
+		const collectionProject = await Project.findOne({ hostname });
+
+		// Initiate project
+		if (!collectionProject) throw new ArgumentError({ data: { field: 'project._id' } });
+
+		// validate permissions
+		const userIsAdmin = this.userIsProjectAdmin(collectionProject);
+		if (!userIsAdmin) throw new PermissionError();
+
+		// set collection projectid and slug
+		collection.projectId = collectionProject._id;
 		collection.slug = _s.slugify(collection.title);
+
+		// Initiate new collection
 		const newCollection = new Collection(collection);
 
-		// Add user to collection
-		const collectionUser = {
-			userId: this.userId,
-			role: 'admin',
-		};
-		newCollection.users.push(collectionUser);
-
-		// save new collection
+		// save new collection and return result
 		return await newCollection.save();
 	}
 
