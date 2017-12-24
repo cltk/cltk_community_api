@@ -1,4 +1,4 @@
-import slugify from 'slugify';
+import _s from 'underscore.string';
 
 // services
 import PermissionsService from './PermissionsService';
@@ -79,7 +79,7 @@ export default class CollectionService extends PermissionsService {
 		if (!this.userId) throw new AuthenticationError();
 
 		// Initiate new collection
-		collection.slug = slugify(collection.title);
+		collection.slug = _s.slugify(collection.title);
 		const newCollection = new Collection(collection);
 
 		// Add user to collection
