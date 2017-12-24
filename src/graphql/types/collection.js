@@ -19,6 +19,14 @@ const config = {
 	schema: Collection.schema,
 	exclude: [],
 	extend: {
+		itemsCount: {
+			type: GraphQLInt,
+			description: 'Get count of items in collection',
+			resolve(parent, _, { token }) {
+				const itemService = new ItemService(token);
+				return itemService.count({ collectionId: parent._id });
+			}
+		},
 		item: {
 			type: ItemType,
 			description: 'Get item document',
@@ -29,11 +37,8 @@ const config = {
 				slug: {
 					type: GraphQLString,
 				},
-				hostname: {
-					type: GraphQLString,
-				},
 			},
-			resolve(parent, { _id, slug, hostname }, { token }) {
+			resolve(parent, { _id, slug }, { token }) {
 				const itemService = new ItemService(token);
 				return itemService.getItem({ collectionId: parent._id, _id, slug, hostname });
 			}
