@@ -114,7 +114,7 @@ export default class CollectionService extends PermissionsService {
 		if (!foundCollection) throw new ArgumentError({ data: { field: 'collection._id' } });
 
 		// validate permissions
-		const userIsAdmin = this.userIsCollectionAdmin(foundCollection);
+		const userIsAdmin = this.userIsProjectAdmin(foundCollection);
 		if (!userIsAdmin) throw new PermissionError();
 
 		// perform action
@@ -141,7 +141,7 @@ export default class CollectionService extends PermissionsService {
 		if (!foundCollection) throw new ArgumentError({ data: { field: 'collectionId' } });
 
 		// validate permissions
-		const userIsAdmin = this.userIsCollectionAdmin(foundCollection);
+		const userIsAdmin = this.userIsProjectAdmin(foundCollection);
 		if (!userIsAdmin) throw new PermissionError();
 
 		// perform action

@@ -76,4 +76,19 @@ export default class UserService extends PermissionsService {
 		// return updated project
 		return await User.findOne({ _id: this.userId });
 	}
+
+	/**
+	 * Check if user is admin for project
+	 * @param {Object} project - project to compare against
+	 * @returns {boolean} if the user is an admin on the current project
+	 */
+	async userIsAdmin({ project }) {
+		// if user is not logged in or there is no project
+		if (!this.userId || !project) {
+			return false;
+		}
+
+		// return updated project
+		return this.userIsProjectAdmin(project);
+	}
 }

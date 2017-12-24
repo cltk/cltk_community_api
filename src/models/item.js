@@ -28,15 +28,18 @@ export const MetadataSchema = new Schema({
 const ItemSchema = new Schema({
 	title: {
 		type: String,
-		unique: true,
 		required: true,
 		trim: true,
+		index: true
+	},
+	projectId: {
+		type: Schema.Types.ObjectId,
+		ref: 'Collection',
 		index: true
 	},
 	collectionId: {
 		type: Schema.Types.ObjectId,
 		ref: 'Collection',
-		// required: true,
 		index: true
 	},
 	description: {
@@ -58,7 +61,6 @@ ItemSchema.plugin(timestamp);
 
 // add slug (slug)
 ItemSchema.plugin(URLSlugs('title'));
-
 
 
 /**
@@ -85,7 +87,6 @@ ItemSchema.methods.validateUser = function validateUser(userId) {
 };
 
 // ItemSchema.statics.createByUser = async function createByUser(newItem, userId) {
-
 // 	try {
 // 		const userIsAdmin = await Collection.isUserAdmin(item.collectionId, user._id);
 // 		if (!userIsAdmin) throw new PermissionError();

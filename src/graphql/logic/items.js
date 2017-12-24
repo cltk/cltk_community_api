@@ -78,11 +78,20 @@ export default class ItemService extends PermissionsService {
 	/**
 	 * Create a new item
 	 * @param {Object} item - item candidate
+	 * @param {string} hostname - hostname of item project
 	 * @returns {Object} created item
 	 */
-	async create(item) {
+	async create(item, hostname) {
 		// if user is not logged in
 		if (!this.userId) throw new AuthenticationError();
+
+		// find project
+		const project = await Project.findOne(hostname);
+		if (!project) throw new ArgumentError({ data: { field: 'hostname' } });
+
+		// validate permissions
+		const userIsAdmin = this.userIsProjectAdmin(project);
+		if (!userIsAdmin) throw new PermissionError();
 
 		// Initiate new item
 		item.slug = slugify(item.title);
@@ -104,16 +113,16 @@ export default class ItemService extends PermissionsService {
 	 * @param {Object} item - item candidate
 	 * @returns {Object} updated item
 	 */
-	async update(item) {
+	async update(item, hostname) {
 		// if user is not logged in
 		if (!this.userId) throw new AuthenticationError();
 
-		// Initiate item
-		const foundItem = await Item.findById(item._id);
-		if (!foundItem) throw new ArgumentError({ data: { field: 'item._id' } });
+		// find project
+		const project = await Project.findOne(hostname);
+		if (!project) throw new ArgumentError({ data: { field: 'hostname' } });
 
 		// validate permissions
-		const userIsAdmin = this.userIsItemAdmin(foundItem);
+		const userIsAdmin = this.userIsProjectAdmin(project);
 		if (!userIsAdmin) throw new PermissionError();
 
 		// perform action
@@ -135,12 +144,12 @@ export default class ItemService extends PermissionsService {
 		// if user is not logged in
 		if (!this.userId) throw new AuthenticationError();
 
-		// initiate item
-		const foundItem = await Item.findById(itemId);
-		if (!foundItem) throw new ArgumentError({ data: { field: 'itemId' } });
+		// find project
+		const project = await Project.findOne(hostname);
+		if (!project) throw new ArgumentError({ data: { field: 'hostname' } });
 
 		// validate permissions
-		const userIsAdmin = this.userIsItemAdmin(foundItem);
+		const userIsAdmin = this.userIsProjectAdmin(project);
 		if (!userIsAdmin) throw new PermissionError();
 
 		// perform action

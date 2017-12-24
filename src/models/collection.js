@@ -16,7 +16,6 @@ const Schema = mongoose.Schema;
 const CollectionSchema = new Schema({
 	title: {
 		type: String,
-		unique: true,
 		required: true,
 		trim: true,
 		index: true

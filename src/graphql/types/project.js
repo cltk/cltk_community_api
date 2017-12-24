@@ -1,4 +1,7 @@
-import { GraphQLObjectType, GraphQLList, GraphQLID, GraphQLString, GraphQLInt } from 'graphql';
+import {
+	GraphQLObjectType, GraphQLList, GraphQLID, GraphQLString, GraphQLInt,
+	GraphQLBoolean,
+} from 'graphql';
 import createType from 'mongoose-schema-to-graphql';
 
 // models
@@ -89,6 +92,13 @@ const config = {
 			})),
 			resolve(parent, args, { token }) {
 				return parent.users;
+			}
+		},
+		userIsAdmin: {
+			type: GraphQLBoolean,
+			resolve(parent, args, { token }) {
+				const userService = new UserService(token);
+				return userService.userIsAdmin({ project: parent });
 			}
 		},
 	},
