@@ -70,7 +70,7 @@ const configInput = {
 	description: 'Collection Schema base create input type',
 	class: 'GraphQLInputObjectType',
 	schema: Collection.schema,
-	exclude: ['_id', 'slug', 'createdAt', 'updatedAt'],
+	exclude: [],
 	extend: {
 		items: {
 			type: new GraphQLList(ItemInputType),

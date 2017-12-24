@@ -8,7 +8,7 @@ import Collection from '../../models/collection';
 import Project from '../../models/project';
 
 // errors
-import { AuthenticationError, PermissionError } from '../errors';
+import { AuthenticationError, PermissionError, ArgumentError } from '../errors';
 
 
 /**
@@ -109,16 +109,16 @@ export default class CollectionService extends PermissionsService {
 		// if user is not logged in
 		if (!this.userId) throw new AuthenticationError();
 
-		// Initiate collection
-		const foundCollection = await Collection.findById(collection._id);
-		if (!foundCollection) throw new ArgumentError({ data: { field: 'collection._id' } });
+		// get project
+		const project = await Project.findOne({ _id: collection.projectId });
+		if (!project) throw new ArgumentError({ data: { field: 'collection.projectId' } });
 
 		// validate permissions
-		const userIsAdmin = this.userIsProjectAdmin(foundCollection);
+		const userIsAdmin = this.userIsProjectAdmin(project);
 		if (!userIsAdmin) throw new PermissionError();
 
 		// perform action
-		Collection.update({ _id: collection._id }, { $set: collection });
+		const result = await Collection.update({ _id: collection._id }, { $set: collection });
 
 		// TODO
 		// error handling
@@ -136,12 +136,12 @@ export default class CollectionService extends PermissionsService {
 		// if user is not logged in
 		if (!this.userId) throw new AuthenticationError();
 
-		// initiate collection
-		const foundCollection = await Collection.findById(collectionId);
-		if (!foundCollection) throw new ArgumentError({ data: { field: 'collectionId' } });
+		// get project
+		const project = await Project.findById(collection.projectId);
+		if (!project) throw new ArgumentError({ data: { field: 'collection.projectId' } });
 
 		// validate permissions
-		const userIsAdmin = this.userIsProjectAdmin(foundCollection);
+		const userIsAdmin = this.userIsProjectAdmin(project);
 		if (!userIsAdmin) throw new PermissionError();
 
 		// perform action
