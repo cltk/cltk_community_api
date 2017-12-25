@@ -34,7 +34,7 @@ const ItemSchema = new Schema({
 	},
 	projectId: {
 		type: Schema.Types.ObjectId,
-		ref: 'Collection',
+		ref: 'Project',
 		index: true
 	},
 	collectionId: {
