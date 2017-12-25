@@ -10,10 +10,12 @@ import Project from '../../models/project';
 // logic
 import ProjectService from '../logic/projects';
 import CollectionService from '../logic/collections';
+import ItemService from '../logic/items';
 import UserService from '../logic/users';
 
 // types
 import CollectionType from './collection';
+import ItemType from './item';
 import ActivityItemType from './activityItem';
 import UserType from './user';
 
@@ -99,6 +101,41 @@ const config = {
 			resolve(parent, args, { token }) {
 				const userService = new UserService(token);
 				return userService.userIsAdmin({ project: parent });
+			}
+		},
+		item: {
+			type: ItemType,
+			description: 'Get item document',
+			args: {
+				_id: {
+					type: GraphQLString,
+				},
+				slug: {
+					type: GraphQLString,
+				},
+			},
+			resolve(parent, { _id, slug }, { token }) {
+				const itemService = new ItemService(token);
+				return itemService.getItem({ collectionId: parent._id, _id, slug });
+			}
+		},
+		items: {
+			type: new GraphQLList(ItemType),
+			description: 'Get list of items',
+			args: {
+				textsearch: {
+					type: GraphQLString,
+				},
+				limit: {
+					type: GraphQLInt,
+				},
+				offset: {
+					type: GraphQLInt,
+				},
+			},
+			resolve(parent, { textsearch, limit, offset }, { token }) {
+				const itemService = new ItemService(token);
+				return itemService.getItems({ collectionId: parent._id, textsearch, limit, offset });
 			}
 		},
 	},
