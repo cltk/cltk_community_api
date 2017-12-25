@@ -11,6 +11,10 @@ import Collection from './collection';
 const Schema = mongoose.Schema;
 
 export const MetadataSchema = new Schema({
+	type: {
+		type: String,
+		required: true,
+	},
 	value: {
 		type: String,
 		required: true,
