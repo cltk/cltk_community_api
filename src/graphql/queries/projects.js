@@ -44,6 +44,9 @@ const projectQueryFields = {
 		type: new GraphQLList(ProjectType),
 		description: 'Get list of projects',
 		args: {
+			textsearch: {
+				type: GraphQLString,
+			},
 			limit: {
 				type: GraphQLInt,
 			},
@@ -51,9 +54,9 @@ const projectQueryFields = {
 				type: GraphQLInt,
 			},
 		},
-		resolve(parent, { limit, offset }, { token }) {
+		resolve(parent, { limit, offset, textsearch }, { token }) {
 			const projectService = new ProjectService(token);
-			return projectService.getProjects({ limit, offset });
+			return projectService.getProjects({ limit, offset, textsearch });
 		}
 	},
 	userProjects: {

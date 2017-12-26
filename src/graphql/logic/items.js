@@ -32,14 +32,27 @@ export default class ItemService extends PermissionsService {
 
 	/**
 	 * Get a list of items
+	 * @param {string} projectId
 	 * @param {string} collectionId
 	 * @param {string} textsearch
 	 * @param {number} offset
 	 * @param {number} limit
 	 * @returns {Object[]} array of items
 	 */
-	async getItems({ collectionId, textsearch, offset, limit }) {
-		const args = { collectionId };
+	async getItems({ projectId, collectionId, textsearch, offset, limit }) {
+		const args = {};
+
+		if (!projectId && !collectionId) {
+			return [];
+		}
+
+		if (projectId) {
+			args.projectId = projectId;
+		}
+
+		if (collectionId) {
+			args.collectionId = collectionId;
+		}
 
 		if (textsearch) {
 			args.title = /.*${textsearch}.*/;

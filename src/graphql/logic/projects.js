@@ -30,7 +30,7 @@ export default class ProjectService extends PermissionsService {
 	 * @param {number} limit
 	 * @returns {Object[]} array of projects
 	 */
-	async getProjects({ offset, limit }) {
+	async getProjects({ offset, limit, textsearch }) {
 		const args = {};
 
 		if (textsearch) {
