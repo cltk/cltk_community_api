@@ -1,4 +1,5 @@
 import faker from 'faker';
+import shortid from 'shortid';
 
 // models
 import Project from '../models/project';
@@ -13,7 +14,7 @@ const generateProjects = async (count, userIds) => {
 		const data = await generateData(count, async () => ({
 			title: faker.lorem.words(),
 			subtitle: faker.lorem.words(),
-			hostname: faker.internet.domainName(),
+			hostname: `${shortid.generate()}-${faker.internet.domainName()}`,
 			description: faker.lorem.sentences(),
 			email: faker.internet.email(),
 			url: faker.internet.url(),

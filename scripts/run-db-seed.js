@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 import faker from 'faker';
+import winston from 'winston';
 
 import setupDB, { closeDB } from '../src/mongoose';
 
@@ -12,44 +13,48 @@ dotenv.config();
 
 const db = setupDB();
 
-db.on('error', console.error)
+db.on('error', winston.error)
 	.on('disconnected', setupDB)
 	.once('open', async () => {
-		console.info(`Connected to mongodb ( host: ${db.host}, port: ${db.port}, name: ${db.name} )`);
+		winston.info(`Connected to mongodb ( host: ${db.host}, port: ${db.port}, name: ${db.name} )`);
 
 		const ids = {};
 
 		// generateUsers
 		try {
-			ids.users = await generateUsers(10);
+			ids.users = await generateUsers(1);
 		} catch (err) {
-			console.error(err);
+			winston.error(err);
 		}
+		winston.info('Generated users');
 
 		// generate projects with users
 		try {
-			ids.projects = await generateProjects(10, ids.users);
+			ids.projects = await generateProjects(100, ids.users);
 		} catch (err) {
-			console.error(err);
+			winston.error(err);
 		}
+		winston.info('Generated projects');
 
 		// generate collections for projects with itemSchemas
 		try {
-			ids.collections = await generateCollection(25, ids.projects);
+			ids.collections = await generateCollection(1000, ids.projects);
 		} catch (err) {
-			console.error(err);
+			winston.error(err);
 		}
+		winston.info('Generated collections');
 
 		// generate items
 		try {
-			ids.items = await generateItem(100, ids.projects, ids.collections);
+			ids.items = await generateItem(10000, ids.projects, ids.collections);
 		} catch (err) {
-			console.error(err);
+			winston.error(err);
 		}
+		winston.info('Generated items');
 
 		// end seed generation process
 		db.close(() => {
-			console.log('Connection closed');
+			winston.log('Connection closed');
 			process.exit(0);
 		});
 	});
