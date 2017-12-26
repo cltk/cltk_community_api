@@ -1,10 +1,11 @@
-import slugify from 'slugify';
+import _s from 'underscore.string';
 
 // services
 import PermissionsService from './PermissionsService';
 
 // models
 import Item from '../../models/item';
+import Project from '../../models/project';
 
 // errors
 import { AuthenticationError, PermissionError } from '../errors';
@@ -81,12 +82,12 @@ export default class ItemService extends PermissionsService {
 	 * @param {string} hostname - hostname of item project
 	 * @returns {Object} created item
 	 */
-	async create(item, hostname) {
+	async create(hostname, item) {
 		// if user is not logged in
 		if (!this.userId) throw new AuthenticationError();
 
 		// find project
-		const project = await Project.findOne(hostname);
+		const project = await Project.findOne({ hostname });
 		if (!project) throw new ArgumentError({ data: { field: 'hostname' } });
 
 		// validate permissions
@@ -94,15 +95,9 @@ export default class ItemService extends PermissionsService {
 		if (!userIsAdmin) throw new PermissionError();
 
 		// Initiate new item
-		item.slug = slugify(item.title);
+		item.projectId = project._id;
+		item.slug = _s.slugify(item.title);
 		const newItem = new Item(item);
-
-		// Add user to item
-		const itemUser = {
-			userId: this.userId,
-			role: 'admin',
-		};
-		newItem.users.push(itemUser);
 
 		// save new item
 		return await newItem.save();
@@ -113,20 +108,20 @@ export default class ItemService extends PermissionsService {
 	 * @param {Object} item - item candidate
 	 * @returns {Object} updated item
 	 */
-	async update(item, hostname) {
+	async update(item) {
 		// if user is not logged in
 		if (!this.userId) throw new AuthenticationError();
 
 		// find project
-		const project = await Project.findOne(hostname);
-		if (!project) throw new ArgumentError({ data: { field: 'hostname' } });
+		const project = await Project.findOne(item.projectId);
+		if (!project) throw new ArgumentError({ data: { field: 'item.projectId' } });
 
 		// validate permissions
 		const userIsAdmin = this.userIsProjectAdmin(project);
 		if (!userIsAdmin) throw new PermissionError();
 
 		// perform action
-		Item.update({ _id: item._id }, { $set: item });
+		const result = await Item.update({ _id: item._id }, { $set: item });
 
 		// TODO
 		// error handling

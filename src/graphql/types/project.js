@@ -135,7 +135,15 @@ const config = {
 			},
 			resolve(parent, { textsearch, limit, offset }, { token }) {
 				const itemService = new ItemService(token);
-				return itemService.getItems({ collectionId: parent._id, textsearch, limit, offset });
+				return itemService.getItems({ projectId: parent._id, textsearch, limit, offset });
+			}
+		},
+		itemsCount: {
+			type: GraphQLInt,
+			description: 'Get count of items in collection',
+			resolve(parent, _, { token }) {
+				const itemService = new ItemService(token);
+				return itemService.count({ collectionId: parent._id });
 			}
 		},
 	},
