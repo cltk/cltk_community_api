@@ -1,19 +1,25 @@
 import faker from 'faker';
 import shortid from 'shortid';
+import _ from 'underscore';
 
 // models
-import Item from '../models/item';
+import Item, { metadataTypes } from '../models/item';
 
 // utils
 import { canSeed, generateData, insertData, notEmptyError, getRandom } from './utils';
+
+
+
 
 const generateMetadata = () => {
 	const count = Math.floor(Math.random() * 5);
 	const metadata = [];
 	for (let i = 0; i < count; i += 1) {
 		const label = faker.lorem.word();
+		const type = _.sample(metadataTypes);
 		const value = faker.helpers.slugify(label);
 		metadata.push({
+			type,
 			value,
 			label,
 		});
@@ -21,12 +27,13 @@ const generateMetadata = () => {
 	return metadata;
 };
 
-const generateItem = async (count, collectionIds) => {
+const generateItem = async (count, projectIds, collectionIds) => {
 
 	if (await canSeed(Item)) {
 		const data = await generateData(count, async() => ({
-			title: faker.commerce.productName(),
+			title: faker.lorem.words(),
 			description: faker.lorem.sentences(),
+			projectId: getRandom(projectIds),
 			collectionId: getRandom(collectionIds),
 			metadata: generateMetadata(),
 		}));

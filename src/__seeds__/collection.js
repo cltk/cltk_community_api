@@ -11,8 +11,9 @@ const generateCollection = async (count, projectIds) => {
 
 	if (await canSeed(Collection)) {
 		const data = await generateData(count, async() => ({
-			title: faker.commerce.productName(),
+			title: faker.lorem.words(),
 			description: faker.lorem.sentences(),
+			coverImage: faker.random.image(),
 			projectId: getRandom(projectIds),
 		}));
 

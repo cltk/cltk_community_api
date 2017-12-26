@@ -35,14 +35,14 @@ db.on('error', console.error)
 
 		// generate collections for projects with itemSchemas
 		try {
-			ids.collectionIds = await generateCollection(25, ids.projects);
+			ids.collections = await generateCollection(25, ids.projects);
 		} catch (err) {
 			console.error(err);
 		}
 
 		// generate items
 		try {
-			ids.itemIds = await generateItem(100, ids.collectionIds);
+			ids.items = await generateItem(100, ids.projects, ids.collections);
 		} catch (err) {
 			console.error(err);
 		}

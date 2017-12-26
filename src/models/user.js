@@ -1,4 +1,5 @@
 import crypto from 'crypto';
+import shortid from 'shortid';
 import mongoose from 'mongoose';
 import timestamp from 'mongoose-timestamp';
 import passportLocalMongoose from 'passport-local-mongoose';
@@ -10,6 +11,10 @@ const Schema = mongoose.Schema;
  * @type {Schema}
  */
 const UserSchema = new Schema({
+	_id: {
+		type: String,
+		default: shortid.generate
+	},
 	username: String,
 	avatar: String,
 	name: String,

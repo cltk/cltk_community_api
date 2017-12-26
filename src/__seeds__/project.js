@@ -11,9 +11,14 @@ const generateProjects = async (count, userIds) => {
 	if (await canSeed(Project)) {
 
 		const data = await generateData(count, async () => ({
-			title: faker.commerce.productName(),
-			subdomain: 'localhost',
+			title: faker.lorem.words(),
+			subtitle: faker.lorem.words(),
+			hostname: faker.internet.domainName(),
 			description: faker.lorem.sentences(),
+			email: faker.internet.email(),
+			url: faker.internet.url(),
+			address: faker.address.streetAddress(),
+			phone: faker.phone.phoneNumber(),
 			users: [{
 				userId: getRandom(userIds),
 				role: 'admin',

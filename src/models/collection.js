@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import shortid from 'shortid';
 
 // plug-ins
 import timestamp from 'mongoose-timestamp';
@@ -14,6 +15,10 @@ const Schema = mongoose.Schema;
  * @type {Schema}
  */
 const CollectionSchema = new Schema({
+	_id: {
+		type: String,
+		default: shortid.generate
+	},
 	title: {
 		type: String,
 		required: true,
@@ -27,7 +32,7 @@ const CollectionSchema = new Schema({
 		type: String,
 	},
 	projectId: {
-		type: Schema.Types.ObjectId,
+		type: String,
 		ref: 'Project',
 		index: true,
 		required: true,
@@ -39,7 +44,9 @@ const CollectionSchema = new Schema({
 CollectionSchema.plugin(timestamp);
 
 // add slug (slug)
-CollectionSchema.plugin(URLSlugs('title'));
+CollectionSchema.plugin(URLSlugs('title', {
+	indexUnique: false
+}));
 
 /**
  * Statics

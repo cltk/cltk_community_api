@@ -1,11 +1,16 @@
 import mongoose from 'mongoose';
+import shortid from 'shortid';
 import timestamp from 'mongoose-timestamp';
 import URLSlugs from 'mongoose-url-slugs';
-import { ImageSchema } from './image';
+import ImageSchema from './image';
 
 const Schema = mongoose.Schema;
 
 const MiradorManifestSchema = new Schema({
+	_id: {
+		type: String,
+		default: shortid.generate
+	},
 	title: {
 		type: String,
 		required: true,
@@ -53,7 +58,9 @@ const MiradorManifestSchema = new Schema({
 MiradorManifestSchema.plugin(timestamp);
 
 // add slug (slug)
-MiradorManifestSchema.plugin(URLSlugs('title'));
+MiradorManifestSchema.plugin(URLSlugs('title', {
+	indexUnique: false,
+}));
 
 const MiradorManifest = mongoose.model('miradorManifest', MiradorManifestSchema);
 
