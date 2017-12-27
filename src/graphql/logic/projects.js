@@ -7,7 +7,7 @@ import PermissionsService from './PermissionsService';
 import Project from '../../models/project';
 
 // errors
-import { AuthenticationError, PermissionError } from '../errors';
+import { AuthenticationError, PermissionError, ArgumentError } from '../errors';
 
 
 /**

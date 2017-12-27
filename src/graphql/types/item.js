@@ -9,6 +9,7 @@ import MetadataType, { MetadataInputType } from './metadata';
 
 // logic
 import ItemService from '../logic/items';
+import FileService from '../logic/files';
 
 // models
 import Item from '../../models/item';
