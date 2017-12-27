@@ -9,6 +9,7 @@ import Project from '../../models/project';
 
 // logic
 import CollectionService from '../logic/collections';
+import ArticleService from '../logic/articles';
 import FileService from '../logic/files';
 import ItemService from '../logic/items';
 import ProjectService from '../logic/projects';
@@ -16,6 +17,7 @@ import UserService from '../logic/users';
 
 // types
 import CollectionType from './collection';
+import ArticleType from './article';
 import FileType from './file';
 import ItemType from './item';
 import ActivityItemType from './activityItem';
@@ -64,6 +66,44 @@ const config = {
 			resolve(parent, { textsearch, limit, offset }, { token }) {
 				const collectionService = new CollectionService(token);
 				return collectionService.getCollections({ projectId: parent._id, textsearch, limit, offset });
+			}
+		},
+		article: {
+			type: ArticleType,
+			description: 'Get article document',
+			args: {
+				_id: {
+					type: GraphQLString,
+				},
+				slug: {
+					type: GraphQLString,
+				},
+				hostname: {
+					type: GraphQLString,
+				},
+			},
+			resolve(parent, { _id, slug, hostname }, { token }) {
+				const articleService = new ArticleService(token);
+				return articleService.getArticle({ projectId: parent._id, _id, slug, hostname });
+			}
+		},
+		articles: {
+			type: new GraphQLList(ArticleType),
+			description: 'Get list of articles',
+			args: {
+				textsearch: {
+					type: GraphQLString,
+				},
+				limit: {
+					type: GraphQLInt,
+				},
+				offset: {
+					type: GraphQLInt,
+				},
+			},
+			resolve(parent, { textsearch, limit, offset }, { token }) {
+				const articleService = new ArticleService(token);
+				return articleService.getArticles({ projectId: parent._id, textsearch, limit, offset });
 			}
 		},
 		activity: {

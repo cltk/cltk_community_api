@@ -45,7 +45,8 @@ UserSchema.plugin(timestamp);
 // Statics
 // // this method is needed for dataloader to work
 UserSchema.statics.findById = function findById(_id, cb) {
-	return User.findOne({ _id }, cb); // eslint-disable-line
+
+	return User.findOne({ _id }, {}, cb); // eslint-disable-line
 };
 
 UserSchema.statics.findByOAuth = function findByOAuth(id, network, cb) {
