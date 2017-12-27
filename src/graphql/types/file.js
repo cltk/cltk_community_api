@@ -4,7 +4,11 @@ import createType from 'mongoose-schema-to-graphql';
 // models
 import File from '../../models/file';
 
+// logic
+import ItemService from '../logic/items';
+
 // types
+import ItemType from './item';
 
 
 const config = {

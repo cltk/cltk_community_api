@@ -28,8 +28,13 @@ const FileSchema = new Schema({
 		trim: true,
 		index: true
 	},
+	projectId: {
+		type: String,
+		ref: 'Project',
+		index: true
+	},
 	itemId: {
-		type: String, 
+		type: String,
 		ref: 'Item',
 		index: true
 	},

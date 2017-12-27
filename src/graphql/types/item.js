@@ -1,13 +1,17 @@
-import { GraphQLList, GraphQLID, GraphQLNonNull, GraphQLString } from 'graphql';
+import {
+	GraphQLList, GraphQLID, GraphQLNonNull, GraphQLString, GraphQLInt,
+} from 'graphql';
 import createType from 'mongoose-schema-to-graphql';
-
-// models
-import Item from '../../models/item';
-import File from '../../models/file';
 
 // types
 import FileType, { FileInputType } from './file';
 import MetadataType, { MetadataInputType } from './metadata';
+
+// logic
+import ItemService from '../logic/items';
+
+// models
+import Item from '../../models/item';
 
 
 const config = {
@@ -19,14 +23,23 @@ const config = {
 	extend: {
 		files: {
 			type: new GraphQLList(FileType),
-			description: 'Get all item files',
-			resolve(item, args, context) {
-				return File.getByItemId(item._id);
+			description: 'Get item files',
+			resolve(item, args, { token }) {
+				const fileService = new FileService(token);
+				return fileService.getFiles({ itemId: item._id });
+			}
+		},
+		filesCount: {
+			type: GraphQLInt,
+			description: 'Count all item files',
+			resolve(item, args, { token }) {
+				const fileService = new FileService(token);
+				return fileService.count({ itemId: item._id });
 			}
 		},
 		metadata: {
 			type: new GraphQLList(MetadataType),
-			description: 'Get all metadata',
+			description: 'Get item metadata',
 			resolve(item, args, context) {
 				return item.metadata;
 			}

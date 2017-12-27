@@ -8,13 +8,15 @@ import createType from 'mongoose-schema-to-graphql';
 import Project from '../../models/project';
 
 // logic
-import ProjectService from '../logic/projects';
 import CollectionService from '../logic/collections';
+import FileService from '../logic/files';
 import ItemService from '../logic/items';
+import ProjectService from '../logic/projects';
 import UserService from '../logic/users';
 
 // types
 import CollectionType from './collection';
+import FileType from './file';
 import ItemType from './item';
 import ActivityItemType from './activityItem';
 import UserType from './user';
@@ -144,6 +146,30 @@ const config = {
 			resolve(parent, _, { token }) {
 				const itemService = new ItemService(token);
 				return itemService.count({ collectionId: parent._id });
+			}
+		},
+		files: {
+			type: new GraphQLList(FileType),
+			description: 'Get item files',
+			resolve(parent, args, { token }) {
+				const fileService = new FileService(token);
+				return fileService.getFiles({ collectionId: parent._id });
+			}
+		},
+		file: {
+			type: FileType,
+			description: 'Get item files',
+			resolve(parent, args, { token }) {
+				const fileService = new FileService(token);
+				return fileService.getFiles({ collectionId: parent._id });
+			}
+		},
+		filesCount: {
+			type: GraphQLInt,
+			description: 'Count all item files',
+			resolve(parent, args, { token }) {
+				const fileService = new FileService(token);
+				return fileService.count({ collectionId: parent._id });
 			}
 		},
 	},
