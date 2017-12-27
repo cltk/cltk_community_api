@@ -1,4 +1,4 @@
-import { GraphQLString, GraphQLNonNull, GraphQLID } from 'graphql';
+import { GraphQLString, GraphQLNonNull, GraphQLID, GraphQLList } from 'graphql';
 
 // types
 import CollectionType, { CollectionInputType } from '../types/collection';
@@ -19,10 +19,13 @@ const collectionMutationFields = {
 			collection: {
 				type: new GraphQLNonNull(CollectionInputType)
 			},
+			items: {
+				type: new GraphQLList(GraphQLString),
+			},
 		},
-		async resolve(_, { hostname, collection }, { token }) {
+		async resolve(_, { hostname, collection, items }, { token }) {
 			const collectionService = new CollectionService(token);
-			return await collectionService.create(hostname, collection);
+			return await collectionService.create(hostname, collection, items);
 		}
 	},
 	collectionUpdate: {
@@ -32,10 +35,13 @@ const collectionMutationFields = {
 			collection: {
 				type: new GraphQLNonNull(CollectionInputType),
 			},
+			items: {
+				type: new GraphQLList(GraphQLString),
+			},
 		},
-		async resolve(_, { collection }, { token }) {
+		async resolve(_, { collection, items }, { token }) {
 			const collectionService = new CollectionService(token);
-			return await collectionService.update(collection);
+			return await collectionService.update(collection, items);
 		}
 	},
 

@@ -57,7 +57,7 @@ const ItemSchema = new Schema({
 		index: true
 	},
 	collectionId: {
-		type: String,
+		type: [String],
 		ref: 'Collection',
 		index: true
 	},

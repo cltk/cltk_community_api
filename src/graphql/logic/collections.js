@@ -6,6 +6,7 @@ import PermissionsService from './PermissionsService';
 // models
 import Collection from '../../models/collection';
 import Project from '../../models/project';
+import Item from '../../models/item';
 
 // errors
 import { AuthenticationError, PermissionError, ArgumentError } from '../errors';
@@ -74,9 +75,10 @@ export default class CollectionService extends PermissionsService {
 	 * Create a new collection
 	 * @param {string} hostname - hostname of the collection for the project
 	 * @param {Object} collection - collection candidate
+	 * @param {[string]} items - list of item ids to add to collection
 	 * @returns {Object} created collection
 	 */
-	async create(hostname, collection) {
+	async create(hostname, collection, items) {
 		// if user is not logged in
 		if (!this.userId) throw new AuthenticationError();
 
@@ -95,17 +97,31 @@ export default class CollectionService extends PermissionsService {
 
 		// Initiate new collection
 		const newCollection = new Collection(collection);
+		const result = await newCollection.save();
+
+		const addToSetResult = await Item.update({
+			_id: {
+				$in: items,
+			},
+		}, {
+			$addToSet: {
+				collectionId: newCollection._id,
+			},
+		}, {
+			multi: true,
+		});
 
 		// save new collection and return result
-		return await newCollection.save();
+		return result;
 	}
 
 	/**
 	 * Update a collection
 	 * @param {Object} collection - collection candidate
+	 * @param {[string]} items - list of item ids to add to collection
 	 * @returns {Object} updated collection
 	 */
-	async update(collection) {
+	async update(collection, items) {
 		// if user is not logged in
 		if (!this.userId) throw new AuthenticationError();
 
@@ -119,6 +135,29 @@ export default class CollectionService extends PermissionsService {
 
 		// perform action
 		const result = await Collection.update({ _id: collection._id }, { $set: collection });
+
+		// update items
+		const removeFromSetResult = await Item.update({
+			collectionId: collection._id,
+		}, {
+			$pull: {
+				collectionId: collection._id,
+			},
+		}, {
+			multi: true,
+		});
+		const addToSetResult = await Item.update({
+			_id: {
+				$in: items,
+			},
+		}, {
+			$addToSet: {
+				collectionId: collection._id,
+			},
+		}, {
+			multi: true,
+		});
+
 
 		// TODO
 		// error handling
