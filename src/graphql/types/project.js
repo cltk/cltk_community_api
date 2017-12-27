@@ -68,6 +68,14 @@ const config = {
 				return collectionService.getCollections({ projectId: parent._id, textsearch, limit, offset });
 			}
 		},
+		collectionsCount: {
+			type: GraphQLInt,
+			description: 'Get count of collection for project',
+			resolve(parent, _, { token }) {
+				const collectionService = new CollectionService(token);
+				return collectionService.count({ projectId: parent._id });
+			}
+		},
 		article: {
 			type: ArticleType,
 			description: 'Get article document',
@@ -104,6 +112,14 @@ const config = {
 			resolve(parent, { textsearch, limit, offset }, { token }) {
 				const articleService = new ArticleService(token);
 				return articleService.getArticles({ projectId: parent._id, textsearch, limit, offset });
+			}
+		},
+		articlesCount: {
+			type: GraphQLInt,
+			description: 'Get count of articles in project',
+			resolve(parent, _, { token }) {
+				const articleService = new ArticleService(token);
+				return articleService.count({ projectId: parent._id });
 			}
 		},
 		activity: {
@@ -158,7 +174,7 @@ const config = {
 			},
 			resolve(parent, { _id, slug }, { token }) {
 				const itemService = new ItemService(token);
-				return itemService.getItem({ collectionId: parent._id, _id, slug });
+				return itemService.getItem({ projectId: parent._id, _id, slug });
 			}
 		},
 		items: {
@@ -182,10 +198,10 @@ const config = {
 		},
 		itemsCount: {
 			type: GraphQLInt,
-			description: 'Get count of items in collection',
+			description: 'Get count of items in project',
 			resolve(parent, _, { token }) {
 				const itemService = new ItemService(token);
-				return itemService.count({ collectionId: parent._id });
+				return itemService.count({ projectId: parent._id });
 			}
 		},
 		files: {
@@ -193,15 +209,20 @@ const config = {
 			description: 'Get item files',
 			resolve(parent, args, { token }) {
 				const fileService = new FileService(token);
-				return fileService.getFiles({ collectionId: parent._id });
+				return fileService.getFiles({ projectId: parent._id });
 			}
 		},
 		file: {
 			type: FileType,
-			description: 'Get item files',
+			description: 'Get a project file',
+			args: {
+				_id: {
+					type: GraphQLString,
+				},
+			},
 			resolve(parent, args, { token }) {
 				const fileService = new FileService(token);
-				return fileService.getFiles({ collectionId: parent._id });
+				return fileService.getFile({ projectId: parent._id, _id });
 			}
 		},
 		filesCount: {
@@ -209,7 +230,7 @@ const config = {
 			description: 'Count all item files',
 			resolve(parent, args, { token }) {
 				const fileService = new FileService(token);
-				return fileService.count({ collectionId: parent._id });
+				return fileService.count({ projectId: parent._id });
 			}
 		},
 	},
