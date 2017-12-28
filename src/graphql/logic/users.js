@@ -68,7 +68,7 @@ export default class UserService extends PermissionsService {
 		if (!this.userId) throw new AuthenticationError();
 
 		// perform action
-		User.update({ _id: this.userId }, { $set: user });
+		const result = await User.update({ _id: this.userId }, { $set: user });
 
 		// TODO
 		// error handling
