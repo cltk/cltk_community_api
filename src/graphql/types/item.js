@@ -101,7 +101,7 @@ const configInput = {
 	description: 'Item Schema base create input type',
 	class: 'GraphQLInputObjectType',
 	schema: Item.schema,
-	exclude: ['_id', 'slug', 'createdAt', 'updatedAt'],
+	exclude: ['createdAt', 'updatedAt'],
 	extend: {
 		metadata: {
 			type: new GraphQLList(MetadataInputType)

@@ -26,9 +26,6 @@ const ArticleSchema = new Schema({
 		index: true
 	},
 	content: {
-		type: Schema.Types.Mixed,
-	},
-	coverImage: {
 		type: String,
 	},
 	projectId: {
