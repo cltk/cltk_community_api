@@ -14,6 +14,7 @@ import FileService from '../logic/files';
 import ItemService from '../logic/items';
 import ProjectService from '../logic/projects';
 import UserService from '../logic/users';
+import PageService from '../logic/pages';
 
 // types
 import CollectionType from './collection';
@@ -22,6 +23,7 @@ import FileType from './file';
 import ItemType from './item';
 import ActivityItemType from './activityItem';
 import UserType from './user';
+import PageType from './page';
 
 
 const config = {
@@ -120,6 +122,52 @@ const config = {
 			resolve(parent, _, { token }) {
 				const articleService = new ArticleService(token);
 				return articleService.count({ projectId: parent._id });
+			}
+		},
+		page: {
+			type: PageType,
+			description: 'Get page document',
+			args: {
+				_id: {
+					type: GraphQLString,
+				},
+				slug: {
+					type: GraphQLString,
+				},
+				hostname: {
+					type: GraphQLString,
+				},
+			},
+			resolve(parent, { _id, slug, hostname }, { token }) {
+				const pageService = new PageService(token);
+				return pageService.getPage({ projectId: parent._id, _id, slug, hostname });
+			}
+		},
+		pages: {
+			type: new GraphQLList(PageType),
+			description: 'Get list of pages',
+			args: {
+				textsearch: {
+					type: GraphQLString,
+				},
+				limit: {
+					type: GraphQLInt,
+				},
+				offset: {
+					type: GraphQLInt,
+				},
+			},
+			resolve(parent, { textsearch, limit, offset }, { token }) {
+				const pageService = new PageService(token);
+				return pageService.getPages({ projectId: parent._id, textsearch, limit, offset });
+			}
+		},
+		pagesCount: {
+			type: GraphQLInt,
+			description: 'Get count of pages in project',
+			resolve(parent, _, { token }) {
+				const pageService = new PageService(token);
+				return pageService.count({ projectId: parent._id });
 			}
 		},
 		activity: {

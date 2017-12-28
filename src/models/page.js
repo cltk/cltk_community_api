@@ -11,10 +11,10 @@ import Project from './project';
 const Schema = mongoose.Schema;
 
 /**
- * Article base schema
+ * Page base schema
  * @type {Schema}
  */
-const ArticleSchema = new Schema({
+const PageSchema = new Schema({
 	_id: {
 		type: String,
 		default: shortid.generate
@@ -41,18 +41,18 @@ const ArticleSchema = new Schema({
 
 
 // add timestamps (createdAt, updatedAt)
-ArticleSchema.plugin(timestamp);
+PageSchema.plugin(timestamp);
 
 // add slug (slug)
-ArticleSchema.plugin(URLSlugs('title', {
+PageSchema.plugin(URLSlugs('title', {
 	indexUnique: false
 }));
 
 /**
- * Article mongoose model
+ * Page mongoose model
  * @type {Object}
  */
-const Article = mongoose.model('Article', ArticleSchema);
+const Page = mongoose.model('Page', PageSchema);
 
-export default Article;
-export { ArticleSchema };
+export default Page;
+export { PageSchema };
