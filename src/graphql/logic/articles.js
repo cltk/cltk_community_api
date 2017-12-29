@@ -71,6 +71,49 @@ export default class ArticleService extends PermissionsService {
 	}
 
 	/**
+	 * Save an article while users are editing
+	 * @param {string} hostname - hostname of the article for the project
+	 * @param {Object} article - article candidate
+	 * @returns {Object} updated article
+	 */
+	async save(hostname, article) {
+		// if user is not logged in
+		if (!this.userId) throw new AuthenticationError();
+
+		const articleProject = await Project.findOne({ hostname });
+
+		// Initiate project
+		if (!articleProject) throw new ArgumentError({ data: { field: 'project.hostname' } });
+
+		// validate permissions
+		const userIsAdmin = this.userIsProjectAdmin(articleProject);
+		if (!userIsAdmin) throw new PermissionError();
+
+		// perform action
+		const existingArticle = await Article.findOne({ _id: article._id });
+		let result;
+		if (existingArticle) {
+			// perform action
+			article.slug = _s.slugify(article.title);
+			result = await Article.update({ _id: article._id }, { $set: article });
+		} else {
+			// set article projectid and slug
+			article.projectId = articleProject._id;
+			article.slug = _s.slugify(article.title);
+
+			// Initiate new article
+			const newArticle = new Article(article);
+			result = await newArticle.save();
+		}
+
+		// TODO
+		// error handling
+
+		// return updated article
+		return result;
+	}
+
+	/**
 	 * Create a new article
 	 * @param {string} hostname - hostname of the article for the project
 	 * @param {Object} article - article candidate

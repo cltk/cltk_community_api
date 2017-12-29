@@ -39,6 +39,23 @@ const articleMutationFields = {
 		}
 	},
 
+	articleSave: {
+		type: ArticleType,
+		description: 'Save an article as a user is editing',
+		args: {
+			hostname: {
+				type: new GraphQLNonNull(GraphQLString)
+			},
+			article: {
+				type: new GraphQLNonNull(ArticleInputType)
+			},
+		},
+		async resolve(_, { hostname, article }, { token }) {
+			const articleService = new ArticleService(token);
+			return await articleService.save(hostname, article);
+		}
+	},
+
 	articleRemove: {
 		type: RemoveType,
 		description: 'Remove article',
