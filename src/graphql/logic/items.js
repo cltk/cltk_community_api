@@ -18,16 +18,26 @@ import { AuthenticationError, PermissionError } from '../errors';
 export default class ItemService extends PermissionsService {
 	/**
 	 * Count items
+	 * @param {string} projectId
 	 * @param {string} collectionId
 	 * @returns {number} count of items
 	 */
-	async count({ collectionId }) {
+	async count({ projectId, collectionId }) {
+		const where = {};
 
-		if (!collectionId) {
+		if (!projectId && !collectionId) {
 			return 0;
 		}
 
-		return await Item.count({ collectionId });
+		if (projectId) {
+			where.projectId = projectId;
+		}
+
+		if (collectionId) {
+			where.collectionId = collectionId;
+		}
+
+		return await Item.count(where);
 	}
 
 	/**
