@@ -56,6 +56,10 @@ const ProjectSchema = new Schema({
 			type: String,
 			enum: ['admin', 'editor'],
 		},
+		status: {
+			type: String,
+			enum: ['private', 'public', 'pending'],
+		},
 	}],
 });
 
