@@ -91,4 +91,19 @@ export default class UserService extends PermissionsService {
 		// return updated project
 		return this.userIsProjectAdmin(project);
 	}
+
+	/**
+	 * Check if provided user id is the id of the signed in user
+	 * @param {string} _id - user id to check
+	 * @returns {boolean} if the user is an admin on the current project
+	 */
+	async userIsActiveUser(_id) {
+		// if user is not logged in
+		if (!this.userId) {
+			return false;
+		}
+
+		// return updated project
+		return (_id === this.userId); 
+	}
 }
