@@ -69,9 +69,6 @@ const ItemSchema = new Schema({
 		type: Boolean,
 		default: false,
 	},
-	files: {
-		type: Array,
-	}
 });
 
 

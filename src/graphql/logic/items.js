@@ -1,10 +1,12 @@
 import _s from 'underscore.string';
+import shortid from 'shortid';
 
 // services
 import PermissionsService from './PermissionsService';
 
 // models
 import Item from '../../models/item';
+import File from '../../models/file';
 import Project from '../../models/project';
 
 // errors
@@ -103,9 +105,10 @@ export default class ItemService extends PermissionsService {
 	 * Create a new item
 	 * @param {Object} item - item candidate
 	 * @param {string} hostname - hostname of item project
+	 * @param {[Object]} files - files for the object
 	 * @returns {Object} created item
 	 */
-	async create(hostname, item) {
+	async create(hostname, item, files) {
 		// if user is not logged in
 		if (!this.userId) throw new AuthenticationError();
 
@@ -122,8 +125,22 @@ export default class ItemService extends PermissionsService {
 		item.slug = _s.slugify(item.title);
 		const newItem = new Item(item);
 
+		await newItem.save();
+
+		// save files and add ids to item
+		if (files) {
+			files.forEach(async (file) => {
+				// relationships
+				file.itemId = newItem._id;
+				file.projectId = project._id;
+
+				const newFile = new File(file);
+				await newFile.save();
+			});
+		}
+
 		// save new item
-		return await newItem.save();
+		return newItem;
 	}
 
 	/**
@@ -131,7 +148,7 @@ export default class ItemService extends PermissionsService {
 	 * @param {Object} item - item candidate
 	 * @returns {Object} updated item
 	 */
-	async update(item) {
+	async update(item, files) {
 		// if user is not logged in
 		if (!this.userId) throw new AuthenticationError();
 
@@ -142,6 +159,28 @@ export default class ItemService extends PermissionsService {
 		// validate permissions
 		const userIsAdmin = this.userIsProjectAdmin(project);
 		if (!userIsAdmin) throw new PermissionError();
+
+		// save files and add ids to item
+		if (files) {
+			files.forEach(async (file) => {
+				if (!('_id' in file)) {
+					file._id = shortid.generate();
+				}
+
+				// relationships
+				file.itemId = item._id;
+				file.projectId = project._id;
+
+				await File.findOneAndUpdate({
+					_id: file._id
+				}, {
+					$set: file
+				}, {
+					upsert: true,
+				});
+			});
+		}
+
 
 		// perform action
 		const result = await Item.update({ _id: item._id }, { $set: item });

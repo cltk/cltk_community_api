@@ -23,7 +23,7 @@ const configInput = {
 	description: 'File Schema base input type',
 	class: 'GraphQLInputObjectType',
 	schema: File.schema,
-	exclude: ['_id', 'slug', 'createdAt', 'updatedAt'],
+	exclude: ['createdAt', 'updatedAt'],
 };
 
 const FileType = createType(config);

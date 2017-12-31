@@ -1,7 +1,8 @@
-import { GraphQLNonNull, GraphQLID, GraphQLString } from 'graphql';
+import { GraphQLNonNull, GraphQLID, GraphQLString, GraphQLList } from 'graphql';
 
 // types
 import ItemType, { ItemInputType } from '../types/item';
+import { FileInputType } from '../types/file';
 import RemoveType from '../types/remove';
 
 // Logic
@@ -20,10 +21,13 @@ const itemMutationFields = {
 			item: {
 				type: new GraphQLNonNull(ItemInputType),
 			},
+			files: {
+				type: new GraphQLList(FileInputType),
+			},
 		},
-		async resolve(obj, { hostname, item }, { token }) {
+		async resolve(obj, { hostname, item, files }, { token }) {
 			const itemService = new ItemService(token);
-			return await itemService.create(hostname, item);
+			return await itemService.create(hostname, item, files);
 		},
 	},
 
@@ -34,10 +38,13 @@ const itemMutationFields = {
 			item: {
 				type: new GraphQLNonNull(ItemInputType),
 			},
+			files: {
+				type: new GraphQLList(FileInputType),
+			},
 		},
-		async resolve(parent, { item }, { token }) {
+		async resolve(parent, { item, files }, { token }) {
 			const itemService = new ItemService(token);
-			return await itemService.update(item);
+			return await itemService.update(item, files);
 		}
 	},
 
