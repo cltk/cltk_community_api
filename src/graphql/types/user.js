@@ -1,5 +1,5 @@
 import {
-	GraphQLObjectType, GraphQLList, GraphQLID, GraphQLString, GraphQLBoolean, 
+	GraphQLObjectType, GraphQLList, GraphQLID, GraphQLString, GraphQLBoolean,
 } from 'graphql';
 import createType from 'mongoose-schema-to-graphql';
 
@@ -15,19 +15,17 @@ const config = {
 	description: 'User base schema',
 	class: 'GraphQLObjectType',
 	schema: User.schema,
-	exclude: ['password', 'hash', 'salt', 'resetPasswordToken', 'verified', 'resetPasswordExpires', 'oauthIds', 'twitter', 'facebook'],
+	exclude: [
+		'password', 'hash', 'salt', 'resetPasswordToken', 'verified',
+		'resetPasswordExpires', 'oauthIds', 'twitter', 'facebook',
+	],
 	extend: {
 		isActiveUser: {
 			type: GraphQLBoolean,
-			description: 'Check if user id is for active user',
-			args: {
-				_id: {
-					type: GraphQLString,
-				},
-			},
-			resolve(parent, { _id }, { token }) {
+			description: 'Check if user id is for user initiating request',
+			resolve(parent, _, { token }) {
 				const userService = new UserService(token);
-				return userService.userIsActiveUser(_id);
+				return userService.userIsActiveUser(parent._id);
 			},
 		},
 	},

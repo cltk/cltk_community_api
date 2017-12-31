@@ -104,6 +104,6 @@ export default class UserService extends PermissionsService {
 		}
 
 		// return updated project
-		return (_id === this.userId); 
+		return (_id === this.userId);
 	}
 }
