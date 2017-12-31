@@ -43,9 +43,9 @@ const userMutationFields = {
 				required: true,
 			},
 		},
-		async resolve(obj, { userEmail, recaptchaVerification }, { token }) {
+		async resolve(obj, { userEmail, role, recaptchaVerification, hostname }, { token }) {
 			const userService = new UserService(token);
-			return await userService.invite({ userEmail, recaptchaVerification });
+			return await userService.invite({ userEmail, role, recaptchaVerification, hostname });
 		}
 	},
 };

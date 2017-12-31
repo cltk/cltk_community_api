@@ -30,7 +30,8 @@ export default class PermissionsService {
 		// Right now only one role
 		project.users.forEach((user) => {
 			if (
-				user.userId.toString() === this.userId
+				user.userId
+				&& user.userId.toString() === this.userId
 			) {
 				userRoleForProject = user.role;
 			}

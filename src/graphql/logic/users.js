@@ -115,7 +115,7 @@ export default class UserService extends PermissionsService {
 	 * @param {string} hostname - project hostname to invite user to
 	 * @returns {boolean} if the invitiation has been sent successfully
 	 */
-	async invite({ userEmail, recaptchaVerification }) {
+	async invite({ userEmail, role, recaptchaVerification, hostname }) {
 		// if user is not logged in
 		if (!this.userId) {
 			return false;
@@ -134,20 +134,30 @@ export default class UserService extends PermissionsService {
 		const userIsAdmin = this.userIsProjectAdmin(project);
 		if (!userIsAdmin) throw new PermissionError();
 
-		let existingUser = User.findOne({ email: userEmail });
+		let user = await User.findOne({ email: userEmail });
 
-		if (!existingUser) {
-			existingUser = new User({
+		if (!user) {
+			user = new User({
 				email: userEmail,
 				username: userEmail,
 				name: userEmail,
 			});
-			await existingUser.save();
+			await user.save();
+			user = await User.findOne({ email: userEmail });
 		}
 
+		const result = await Project.update({
+			_id: project._id,
+		}, {
+			$push: {
+				users: {
+					userId: user._id,
+					role: 'admin',
+					status: 'pending',
+				}
+			}
+		});
 
-
-
-		return true;
+		return result;
 	}
 }
