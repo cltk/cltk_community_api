@@ -103,7 +103,51 @@ export default class UserService extends PermissionsService {
 			return false;
 		}
 
-		// return updated project
+		// return if the user who made this request is the parent user object requested
 		return (_id === this.userId);
+	}
+
+	/**
+	 * Invite a user to join project via email (with captcha)
+	 * @param {string} userEmail - user Email to invite to join
+	 * @param {string} role - invited user role
+	 * @param {string} recaptchaVerification - recaptcha verification to prevent bots
+	 * @param {string} hostname - project hostname to invite user to
+	 * @returns {boolean} if the invitiation has been sent successfully
+	 */
+	async invite({ userEmail, recaptchaVerification }) {
+		// if user is not logged in
+		if (!this.userId) {
+			return false;
+		}
+
+		// TODO: if recaptchaVerification fails
+		if (!recaptchaVerification) {
+			return false;
+		}
+
+		// find project
+		const project = await Project.findOne({ hostname });
+		if (!project) throw new ArgumentError({ data: { field: 'hostname' } });
+
+		// validate permissions
+		const userIsAdmin = this.userIsProjectAdmin(project);
+		if (!userIsAdmin) throw new PermissionError();
+
+		let existingUser = User.findOne({ email: userEmail });
+
+		if (!existingUser) {
+			existingUser = new User({
+				email: userEmail,
+				username: userEmail,
+				name: userEmail,
+			});
+			await existingUser.save();
+		}
+
+
+
+
+		return true;
 	}
 }
