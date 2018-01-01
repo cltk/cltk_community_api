@@ -16,6 +16,55 @@ import Project from '../../models/project';
 import { AuthenticationError, PermissionError } from '../errors';
 
 
+
+
+
+const createManifest = async (project, item, files) => {
+	const images = [];
+	files.forEach((file) => {
+		let newImageName = file.name;
+		newImageName = newImageName.replace(`${file._id}-`, '');
+
+		images.push({
+			_id: file._id,
+			name: newImageName,
+			label: file.title,
+		});
+	});
+
+	// update item manifest
+	const manifest = {
+		itemId: item._id,
+		title: item.title,
+		label: item.title,
+		description: item.description,
+		attribution: project.title,
+		images,
+	};
+
+	let existingManifest = await Manifest.findOne({ itemId: manifest.itemId });
+	if (!existingManifest) {
+		existingManifest = new Manifest(manifest);
+		await existingManifest.save();
+		existingManifest = await Manifest.findOne({ itemId: manifest.itemId });
+	} else {
+		await Manifest.update({
+			itemId: manifest.itemId,
+		}, {
+			$set: manifest
+		});
+	}
+
+	manifest._id = existingManifest._id;
+	const manifestCreationResult = await request.post('http://generate-manifests.orphe.us/manifests', {
+		form: {
+			manifest: JSON.stringify(manifest),
+			responseUrl: 'http://c43a224e.ngrok.io/manifests', // process.env.MANIFEST_RESPONSE_URL,
+		},
+	});
+};
+
+
 /**
  * Logic-layer service for dealing with items
  */
@@ -142,49 +191,7 @@ export default class ItemService extends PermissionsService {
 				await newFile.save();
 			});
 
-			const images = [];
-			files.forEach((file) => {
-				let newImageName = file.name;
-				newImageName = newImageName.replace(`${file._id}-`, '');
-
-				images.push({
-					_id: file._id,
-					name: newImageName,
-					label: file.title,
-				});
-			});
-
-			// update item manifest
-			const manifest = {
-				itemId: item._id,
-				title: item.title,
-				label: item.title,
-				description: item.description,
-				attribution: project.title,
-				images,
-			};
-
-			let existingManifest = Manifest.findOne({ itemId: manifest.itemId });
-			if (!existingManifest) {
-				existingManifest = new Manifest(manifest);
-				await manifest.save();
-				existingManifest = Manifest.findOne({ itemId: manifest.itemId });
-			} else {
-				await Manifest.update({
-					itemId: manifest.itemId,
-				}, {
-					$set: manifest
-				});
-			}
-
-			manifest._id = existingManifest._id;
-
-			const manifestCreationResult = await request.post('http://generate-manifests.orphe.us/manifests', {
-				form: {
-					manifest: JSON.stringify(manifest),
-					responseUrl: 'http://c43a224e.ngrok.io/manifests', // process.env.MANIFEST_RESPONSE_URL,
-				},
-			});
+			await createManifest(project, item, files);
 		}
 
 		// return new item
@@ -228,49 +235,7 @@ export default class ItemService extends PermissionsService {
 				});
 			});
 
-			const images = [];
-			files.forEach((file) => {
-				let newImageName = file.name;
-				newImageName = newImageName.replace(`${file._id}-`, '');
-
-				images.push({
-					_id: file._id,
-					name: newImageName,
-					label: file.title,
-				});
-			});
-
-			// update item manifest
-			const manifest = {
-				itemId: item._id,
-				title: item.title,
-				label: item.title,
-				description: item.description,
-				attribution: project.title,
-				images,
-			};
-
-			let existingManifest = Manifest.findOne({ itemId: manifest.itemId });
-			if (!existingManifest) {
-				existingManifest = new Manifest(manifest);
-				await manifest.save();
-				existingManifest = Manifest.findOne({ itemId: manifest.itemId });
-			} else {
-				await Manifest.update({
-					itemId: manifest.itemId,
-				}, {
-					$set: manifest
-				});
-			}
-
-			manifest._id = existingManifest._id;
-
-			const manifestCreationResult = await request.post('http://generate-manifests.orphe.us/manifests', {
-				form: {
-					manifest: JSON.stringify(manifest),
-					responseUrl: 'http://c43a224e.ngrok.io/manifests', // process.env.MANIFEST_RESPONSE_URL,
-				},
-			});
+			await createManifest(project, item, files);
 		}
 
 		// perform action
