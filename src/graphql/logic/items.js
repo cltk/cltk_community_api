@@ -59,7 +59,7 @@ const createManifest = async (project, item, files) => {
 	const manifestCreationResult = await request.post('http://generate-manifests.orphe.us/manifests', {
 		form: {
 			manifest: JSON.stringify(manifest),
-			responseUrl: 'http://c43a224e.ngrok.io/manifests', // process.env.MANIFEST_RESPONSE_URL,
+			responseUrl: process.env.MANIFEST_RESPONSE_URL,
 		},
 	});
 };
