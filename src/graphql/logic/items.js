@@ -37,7 +37,7 @@ const createManifest = async (project, item, files) => {
 		itemId: item._id,
 		title: item.title,
 		label: item.title,
-		description: item.description,
+		description: item.description || '',
 		attribution: project.title,
 		images,
 	};
