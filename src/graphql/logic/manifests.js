@@ -4,7 +4,7 @@ import _s from 'underscore.string';
 import PermissionsService from './PermissionsService';
 
 // models
-import File from '../../models/file';
+import Manifest from '../../models/manifest';
 import Project from '../../models/project';
 
 // errors
@@ -12,15 +12,15 @@ import { AuthenticationError, PermissionError } from '../errors';
 
 
 /**
- * Logic-layer service for dealing with files
+ * Logic-layer service for dealing with manifests
  */
 
-export default class FileService extends PermissionsService {
+export default class ManifestService extends PermissionsService {
 	/**
-	 * Count files
+	 * Count manifests
 	 * @param {string} itemId
 	 * @param {string} projectId
-	 * @returns {number} count of files
+	 * @returns {number} count of manifests
 	 */
 	async count({ itemId, projectId }) {
 		const args = {};
@@ -37,19 +37,19 @@ export default class FileService extends PermissionsService {
 			args.itemId = itemId;
 		}
 
-		return await File.count(args);
+		return await Manifest.count(args);
 	}
 
 	/**
-	 * Get a list of files
+	 * Get a list of manifests
 	 * @param {string} projectId
 	 * @param {string} itemId
 	 * @param {string} textsearch
 	 * @param {number} offset
 	 * @param {number} limit
-	 * @returns {Object[]} array of files
+	 * @returns {Object[]} array of manifests
 	 */
-	async getFiles({ projectId, itemId, textsearch, offset, limit }) {
+	async getManifests({ projectId, itemId, textsearch, offset, limit }) {
 		const args = {};
 
 		if (!projectId && !itemId) {
@@ -68,20 +68,20 @@ export default class FileService extends PermissionsService {
 			args.title = /.*${textsearch}.*/;
 		}
 
-		return await File.find(args)
+		return await Manifest.find(args)
 			.sort({ createdAt: 1 })
 			.skip(offset)
 			.limit(limit);
 	}
 
 	/**
-	 * Get file
-	 * @param {string} projectId - id of item of file
-	 * @param {number} _id - id of file
-	 * @param {string} slug - slug of file
-	 * @returns {Object[]} array of files
+	 * Get manifest
+	 * @param {string} projectId - id of item of manifest
+	 * @param {number} _id - id of manifest
+	 * @param {string} slug - slug of manifest
+	 * @returns {Object[]} array of manifests
 	 */
-	async getFile({ projectId, _id, slug }) {
+	async getManifest({ projectId, _id, slug }) {
 		const where = {};
 
 		if (!_id && !slug) {
@@ -96,16 +96,16 @@ export default class FileService extends PermissionsService {
 			where.slug = slug;
 		}
 
-		return await File.findOne(where);
+		return await Manifest.findOne(where);
 	}
 
 	/**
-	 * Create a new file
-	 * @param {Object} file - file candidate
-	 * @param {string} hostname - hostname of file project
-	 * @returns {Object} created file
+	 * Create a new manifest
+	 * @param {Object} manifest - manifest candidate
+	 * @param {string} hostname - hostname of manifest project
+	 * @returns {Object} created manifest
 	 */
-	async create(hostname, file) {
+	async create(hostname, manifest) {
 		// if user is not logged in
 		if (!this.userId) throw new AuthenticationError();
 
@@ -117,45 +117,45 @@ export default class FileService extends PermissionsService {
 		const userIsAdmin = this.userIsProjectAdmin(project);
 		if (!userIsAdmin) throw new PermissionError();
 
-		// Initiate new file
-		file.projectId = project._id;
-		file.slug = _s.slugify(file.title);
-		const newFile = new File(file);
+		// Initiate new manifest
+		manifest.projectId = project._id;
+		manifest.slug = _s.slugify(manifest.title);
+		const newManifest = new Manifest(manifest);
 
-		// save new file
-		return await newFile.save();
+		// save new manifest
+		return await newManifest.save();
 	}
 
 	/**
-	 * Update a file
-	 * @param {Object} file - file candidate
-	 * @returns {Object} updated file
+	 * Update a manifest
+	 * @param {Object} manifest - manifest candidate
+	 * @returns {Object} updated manifest
 	 */
-	async update(file) {
+	async update(manifest) {
 		// if user is not logged in
 		if (!this.userId) throw new AuthenticationError();
 
 		// find project
-		const project = await Project.findOne(file.projectId);
-		if (!project) throw new ArgumentError({ data: { field: 'file.projectId' } });
+		const project = await Project.findOne(manifest.projectId);
+		if (!project) throw new ArgumentError({ data: { field: 'manifest.projectId' } });
 
 		// validate permissions
 		const userIsAdmin = this.userIsProjectAdmin(project);
 		if (!userIsAdmin) throw new PermissionError();
 
 		// perform action
-		const result = await File.update({ _id: file._id }, { $set: file });
+		const result = await Manifest.update({ _id: manifest._id }, { $set: manifest });
 
 		// TODO
 		// error handling
 
-		// return updated file
-		return await File.findById(file._id);
+		// return updated manifest
+		return await Manifest.findById(manifest._id);
 	}
 
 	/**
-	 * Remove a file
-	 * @param {string} _id - id of file to Remove
+	 * Remove a manifest
+	 * @param {string} _id - id of manifest to Remove
 	 * @returns {boolean} remove result
 	 */
 	async remove(_id) {
@@ -171,7 +171,7 @@ export default class FileService extends PermissionsService {
 		if (!userIsAdmin) throw new PermissionError();
 
 		// perform action
-		const result = await File.remove({ _id });
+		const result = await Manifest.remove({ _id });
 
 		// TODO
 		// error handling

@@ -7,6 +7,7 @@ import createType from 'mongoose-schema-to-graphql';
 import FileType, { FileInputType } from './file';
 import MetadataType, { MetadataInputType } from './metadata';
 import CommentType from './comment';
+import ManifestType from './manifest';
 
 // logic
 import ItemService from '../logic/items';
@@ -93,7 +94,15 @@ const config = {
 				return item.metadata;
 			}
 		},
-	}
+		manifest: {
+			type: ManifestType,
+			description: 'Get a IIIF manifest for all image files associated with item',
+			resolve(parent, _, { token }) {
+				const manifestService = new ManifestService(token);
+				return manifestService.getManifest({ itemId: parent._id, });
+			}
+		},
+	},
 };
 
 const configInput = {

@@ -1,5 +1,6 @@
 import _s from 'underscore.string';
 import shortid from 'shortid';
+import rp from 'request-promise';
 
 // services
 import PermissionsService from './PermissionsService';
@@ -7,6 +8,7 @@ import PermissionsService from './PermissionsService';
 // models
 import Item from '../../models/item';
 import File from '../../models/file';
+import Manifest from '../../models/manifest';
 import Project from '../../models/project';
 
 // errors
@@ -127,8 +129,9 @@ export default class ItemService extends PermissionsService {
 
 		await newItem.save();
 
-		// save files and add ids to item
 		if (files) {
+
+			// save files and add ids to item
 			files.forEach(async (file) => {
 				// relationships
 				file.itemId = newItem._id;
@@ -137,9 +140,32 @@ export default class ItemService extends PermissionsService {
 				const newFile = new File(file);
 				await newFile.save();
 			});
+
+			// create item manifest
+			let manifest = {
+				title: item.title,
+				description: item.description,
+				attribution: project.title,
+				images: files,
+			};
+
+			manifest = new Manifest(manifest);
+			await manifest.save();
+
+			const manifestPostOptions = {
+				method: 'POST',
+				uri: 'http://generate-manifests.orphe.us/manifests',
+				body: {
+					manifest,
+					responseUrl: 'http://c43a224e.ngrok.io', // process.env.MANIFEST_RESPONSE_URL,
+				},
+				json: true,
+			};
+
+			const manifestCreationResult = await rp(options);
 		}
 
-		// save new item
+		// return new item
 		return newItem;
 	}
 
@@ -179,8 +205,40 @@ export default class ItemService extends PermissionsService {
 					upsert: true,
 				});
 			});
-		}
 
+
+			// update item manifest
+			const manifest = {
+				title: item.title,
+				description: item.description,
+				attribution: project.title,
+				images: files,
+			};
+
+			if (!('_id' in manifest)) {
+				manifest._id = shortid.generate();
+			}
+			const updatedManifest =	await Manifest.findOneAndUpdate({
+				_id: manifest._id,
+			}, {
+				$set: manifest
+			}, {
+				upsert: true,
+			});
+
+
+			const manifestPostOptions = {
+				method: 'POST',
+				uri: 'http://generate-manifests.orphe.us/manifests',
+				body: {
+					manifest: updatedManifest,
+					responseUrl: 'http://c43a224e.ngrok.io', // process.env.MANIFEST_RESPONSE_URL,
+				},
+				json: true,
+			};
+
+			const manifestCreationResult = await rp(manifestPostOptions);
+		}
 
 		// perform action
 		const result = await Item.update({ _id: item._id }, { $set: item });

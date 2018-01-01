@@ -52,6 +52,7 @@
     "redis": "^2.8.0",
     "redis-dataloader": "^0.4.2",
     "request": "^2.81.0",
+    "request-promise": "^4.2.2",
     "slugify": "^1.2.6",
     "subscriptions-transport-ws": "^0.8.1",
     "twitter": "^1.7.1",

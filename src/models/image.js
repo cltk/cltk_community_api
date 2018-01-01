@@ -12,6 +12,7 @@ const ImageSchema = new Schema({
 	type: String,
 	path: String,
 	thumbPath: String,
+	label: String,
 });
 
 export default ImageSchema;

@@ -4,7 +4,6 @@ import articleMutationFields from './articles';
 import projectMutationFields from './projects';
 import collectionMutationFields from './collections';
 import itemMutationFields from './items';
-import miradorMutationFields from './miradorManifests';
 import userMutationFields from './users';
 
 /**
@@ -19,7 +18,6 @@ const RootMutations = new GraphQLObjectType({
 		...articleMutationFields,
 		...collectionMutationFields,
 		...itemMutationFields,
-		...miradorMutationFields,
 		...userMutationFields,
 	},
 });

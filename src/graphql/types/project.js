@@ -268,7 +268,7 @@ const config = {
 					type: GraphQLString,
 				},
 			},
-			resolve(parent, args, { token }) {
+			resolve(parent, { _id }, { token }) {
 				const fileService = new FileService(token);
 				return fileService.getFile({ projectId: parent._id, _id });
 			}

@@ -38,34 +38,34 @@ const Schema = mongoose.Schema;
  * @type {Schema}
  */
 const ProjectSchema = new Schema({
-	title: {
-		type: String,
-		unique: true,
-		required: true,
-		trim: true,
-		index: true,
-	},
-	hostname: {
-		unique: true,
-		required: true,
-		type: String,
-		trim: true,
-		index: true,
-	},
-	description: {
-		type: String,
-	},
-	users: [{
-		userId: {
-			type: Schema.Types.ObjectId,
-			ref: 'User',
-			index: true,
-		},
-		role: {
-			type: String,
-			enum: ['admin', 'editor'],
-		},
-	}],
+  title: {
+    type: String,
+    unique: true,
+    required: true,
+    trim: true,
+    index: true,
+  },
+  hostname: {
+    unique: true,
+    required: true,
+    type: String,
+    trim: true,
+    index: true,
+  },
+  description: {
+    type: String,
+  },
+  users: [{
+    userId: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      index: true,
+    },
+    role: {
+      type: String,
+      enum: ['admin', 'editor'],
+    },
+  }],
 });
 
 
@@ -93,7 +93,7 @@ ProjectSchema.plugin(URLSlugs('title'));
  * @return {Promise} (Promise) Array of projects
  */
 ProjectSchema.statics.findByUserId = function findByUserId(userId) {
-	return this.find({ users: { $elemMatch: { userId } } });
+  return this.find({ users: { $elemMatch: { userId } } });
 };
 
 /**
@@ -102,7 +102,7 @@ ProjectSchema.statics.findByUserId = function findByUserId(userId) {
  * @return {Promise} (Promise) The Project
  */
 ProjectSchema.statics.findByHostname = (hostname, cb) => (
-	Project.findOne({ hostname }, cb)
+  Project.findOne({ hostname }, cb)
 );
 
 /**
@@ -112,16 +112,16 @@ ProjectSchema.statics.findByHostname = (hostname, cb) => (
  * @return {Promise}            	(Promise) True if user has the role of owner for this project
  */
 ProjectSchema.statics.isUserAdmin = async function isUserAdmin(projectId, userId) {
-	try {
-		const project = await this.find({ _id: projectId, users: { $elemMatch: { userId, role: 'admin' } } });
+  try {
+    const project = await this.find({ _id: projectId, users: { $elemMatch: { userId, role: 'admin' } } });
 
-		if (project) return true;
+    if (project) return true;
 
-		return false;
+    return false;
 
-	} catch (err) {
-		throw err;
-	}
+  } catch (err) {
+    throw err;
+  }
 };
 
 /**
@@ -131,13 +131,13 @@ ProjectSchema.statics.isUserAdmin = async function isUserAdmin(projectId, userId
  * @return {Promise}               	(Promise) The new Project
  */
 ProjectSchema.statics.createByAdmin = function createByAdmin(userId, newProject) {
-	return this.create({
-		users: [{
-			userId,
-			role: 'admin',
-		}],
-		...newProject,
-	});
+  return this.create({
+    users: [{
+      userId,
+      role: 'admin',
+    }],
+    ...newProject,
+  });
 };
 
 export default Project;
@@ -152,7 +152,7 @@ export { ProjectSchema };
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="EmailManager.html">EmailManager</a></li></ul><h3>Global</h3><ul><li><a href="global.html#ArgumentError">ArgumentError</a></li><li><a href="global.html#AuthenticationError">AuthenticationError</a></li><li><a href="global.html#closeDB">closeDB</a></li><li><a href="global.html#Collection">Collection</a></li><li><a href="global.html#CollectionSchema">CollectionSchema</a></li><li><a href="global.html#dbSetup">dbSetup</a></li><li><a href="global.html#File">File</a></li><li><a href="global.html#FileSchema">FileSchema</a></li><li><a href="global.html#generateJWT">generateJWT</a></li><li><a href="global.html#getURL">getURL</a></li><li><a href="global.html#handleMongooseError">handleMongooseError</a></li><li><a href="global.html#Item">Item</a></li><li><a href="global.html#ItemSchema">ItemSchema</a></li><li><a href="global.html#jwtAuthenticate">jwtAuthenticate</a></li><li><a href="global.html#loginOAuth1">loginOAuth1</a></li><li><a href="global.html#loginOAuth2">loginOAuth2</a></li><li><a href="global.html#loginPWD">loginPWD</a></li><li><a href="global.html#miradorQueryFields">miradorQueryFields</a></li><li><a href="global.html#MongooseDuplicateKeyError">MongooseDuplicateKeyError</a></li><li><a href="global.html#MongooseGeneralError">MongooseGeneralError</a></li><li><a href="global.html#MongooseValidationError">MongooseValidationError</a></li><li><a href="global.html#oauthSetup">oauthSetup</a></li><li><a href="global.html#PermissionError">PermissionError</a></li><li><a href="global.html#Project">Project</a></li><li><a href="global.html#ProjectError">ProjectError</a></li><li><a href="global.html#ProjectSchema">ProjectSchema</a></li><li><a href="global.html#redisSetup">redisSetup</a></li><li><a href="global.html#RootMutations">RootMutations</a></li><li><a href="global.html#RootQuery">RootQuery</a></li><li><a href="global.html#RootSchema">RootSchema</a></li><li><a href="global.html#RootSubscription">RootSubscription</a></li><li><a href="global.html#storeSetup">storeSetup</a></li><li><a href="global.html#User">User</a></li><li><a href="global.html#UserSchema">UserSchema</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="EmailManager.html">EmailManager</a></li></ul><h3>Global</h3><ul><li><a href="global.html#ArgumentError">ArgumentError</a></li><li><a href="global.html#AuthenticationError">AuthenticationError</a></li><li><a href="global.html#closeDB">closeDB</a></li><li><a href="global.html#Collection">Collection</a></li><li><a href="global.html#CollectionSchema">CollectionSchema</a></li><li><a href="global.html#dbSetup">dbSetup</a></li><li><a href="global.html#File">File</a></li><li><a href="global.html#FileSchema">FileSchema</a></li><li><a href="global.html#generateJWT">generateJWT</a></li><li><a href="global.html#getURL">getURL</a></li><li><a href="global.html#handleMongooseError">handleMongooseError</a></li><li><a href="global.html#Item">Item</a></li><li><a href="global.html#ItemSchema">ItemSchema</a></li><li><a href="global.html#jwtAuthenticate">jwtAuthenticate</a></li><li><a href="global.html#loginOAuth1">loginOAuth1</a></li><li><a href="global.html#loginOAuth2">loginOAuth2</a></li><li><a href="global.html#loginPWD">loginPWD</a></li><li><a href="global.html#manifestQueryFields">manifestQueryFields</a></li><li><a href="global.html#MongooseDuplicateKeyError">MongooseDuplicateKeyError</a></li><li><a href="global.html#MongooseGeneralError">MongooseGeneralError</a></li><li><a href="global.html#MongooseValidationError">MongooseValidationError</a></li><li><a href="global.html#oauthSetup">oauthSetup</a></li><li><a href="global.html#PermissionError">PermissionError</a></li><li><a href="global.html#Project">Project</a></li><li><a href="global.html#ProjectError">ProjectError</a></li><li><a href="global.html#ProjectSchema">ProjectSchema</a></li><li><a href="global.html#redisSetup">redisSetup</a></li><li><a href="global.html#RootMutations">RootMutations</a></li><li><a href="global.html#RootQuery">RootQuery</a></li><li><a href="global.html#RootSchema">RootSchema</a></li><li><a href="global.html#RootSubscription">RootSubscription</a></li><li><a href="global.html#storeSetup">storeSetup</a></li><li><a href="global.html#User">User</a></li><li><a href="global.html#UserSchema">UserSchema</a></li></ul>
 </nav>
 
 <br class="clear">

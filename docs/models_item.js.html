@@ -39,14 +39,14 @@ import Collection from './collection';
 const Schema = mongoose.Schema;
 
 export const MetadataSchema = new Schema({
-	value: {
-		type: String,
-		required: true,
-	},
-	label: {
-		type: String,
-		required: true,
-	}
+  value: {
+    type: String,
+    required: true,
+  },
+  label: {
+    type: String,
+    required: true,
+  }
 });
 
 /**
@@ -54,30 +54,30 @@ export const MetadataSchema = new Schema({
  * @type {Schema}
  */
 const ItemSchema = new Schema({
-	title: {
-		type: String,
-		unique: true,
-		required: true,
-		trim: true,
-		index: true
-	},
-	collectionId: {
-		type: Schema.Types.ObjectId,
-		ref: 'Collection',
-		// required: true,
-		index: true
-	},
-	description: {
-		type: String,
-	},
-	metadata: [MetadataSchema],
-	private: {
-		type: Boolean,
-		default: false,
-	},
-	files: {
-		type: Array,
-	}
+  title: {
+    type: String,
+    unique: true,
+    required: true,
+    trim: true,
+    index: true
+  },
+  collectionId: {
+    type: Schema.Types.ObjectId,
+    ref: 'Collection',
+    // required: true,
+    index: true
+  },
+  description: {
+    type: String,
+  },
+  metadata: [MetadataSchema],
+  private: {
+    type: Boolean,
+    default: false,
+  },
+  files: {
+    type: Array,
+  }
 });
 
 
@@ -100,7 +100,7 @@ ItemSchema.plugin(URLSlugs('title'));
  */
 
 ItemSchema.statics.findByCollectionId = function findByCollectionId(collectionId) {
-	return this.find({ collectionId }).select({ _id: 1 });
+  return this.find({ collectionId }).select({ _id: 1 });
 };
 
 
@@ -109,7 +109,7 @@ ItemSchema.statics.findByCollectionId = function findByCollectionId(collectionId
  */
 
 ItemSchema.methods.validateUser = function validateUser(userId) {
-	return Collection.isUserAdmin(this.collectionId, userId);
+  return Collection.isUserAdmin(this.collectionId, userId);
 };
 
 // ItemSchema.statics.createByUser = async function createByUser(newItem, userId) {
@@ -142,7 +142,7 @@ export { ItemSchema };
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="EmailManager.html">EmailManager</a></li></ul><h3>Global</h3><ul><li><a href="global.html#ArgumentError">ArgumentError</a></li><li><a href="global.html#AuthenticationError">AuthenticationError</a></li><li><a href="global.html#closeDB">closeDB</a></li><li><a href="global.html#Collection">Collection</a></li><li><a href="global.html#CollectionSchema">CollectionSchema</a></li><li><a href="global.html#dbSetup">dbSetup</a></li><li><a href="global.html#File">File</a></li><li><a href="global.html#FileSchema">FileSchema</a></li><li><a href="global.html#generateJWT">generateJWT</a></li><li><a href="global.html#getURL">getURL</a></li><li><a href="global.html#handleMongooseError">handleMongooseError</a></li><li><a href="global.html#Item">Item</a></li><li><a href="global.html#ItemSchema">ItemSchema</a></li><li><a href="global.html#jwtAuthenticate">jwtAuthenticate</a></li><li><a href="global.html#loginOAuth1">loginOAuth1</a></li><li><a href="global.html#loginOAuth2">loginOAuth2</a></li><li><a href="global.html#loginPWD">loginPWD</a></li><li><a href="global.html#miradorQueryFields">miradorQueryFields</a></li><li><a href="global.html#MongooseDuplicateKeyError">MongooseDuplicateKeyError</a></li><li><a href="global.html#MongooseGeneralError">MongooseGeneralError</a></li><li><a href="global.html#MongooseValidationError">MongooseValidationError</a></li><li><a href="global.html#oauthSetup">oauthSetup</a></li><li><a href="global.html#PermissionError">PermissionError</a></li><li><a href="global.html#Project">Project</a></li><li><a href="global.html#ProjectError">ProjectError</a></li><li><a href="global.html#ProjectSchema">ProjectSchema</a></li><li><a href="global.html#redisSetup">redisSetup</a></li><li><a href="global.html#RootMutations">RootMutations</a></li><li><a href="global.html#RootQuery">RootQuery</a></li><li><a href="global.html#RootSchema">RootSchema</a></li><li><a href="global.html#RootSubscription">RootSubscription</a></li><li><a href="global.html#storeSetup">storeSetup</a></li><li><a href="global.html#User">User</a></li><li><a href="global.html#UserSchema">UserSchema</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="EmailManager.html">EmailManager</a></li></ul><h3>Global</h3><ul><li><a href="global.html#ArgumentError">ArgumentError</a></li><li><a href="global.html#AuthenticationError">AuthenticationError</a></li><li><a href="global.html#closeDB">closeDB</a></li><li><a href="global.html#Collection">Collection</a></li><li><a href="global.html#CollectionSchema">CollectionSchema</a></li><li><a href="global.html#dbSetup">dbSetup</a></li><li><a href="global.html#File">File</a></li><li><a href="global.html#FileSchema">FileSchema</a></li><li><a href="global.html#generateJWT">generateJWT</a></li><li><a href="global.html#getURL">getURL</a></li><li><a href="global.html#handleMongooseError">handleMongooseError</a></li><li><a href="global.html#Item">Item</a></li><li><a href="global.html#ItemSchema">ItemSchema</a></li><li><a href="global.html#jwtAuthenticate">jwtAuthenticate</a></li><li><a href="global.html#loginOAuth1">loginOAuth1</a></li><li><a href="global.html#loginOAuth2">loginOAuth2</a></li><li><a href="global.html#loginPWD">loginPWD</a></li><li><a href="global.html#manifestQueryFields">manifestQueryFields</a></li><li><a href="global.html#MongooseDuplicateKeyError">MongooseDuplicateKeyError</a></li><li><a href="global.html#MongooseGeneralError">MongooseGeneralError</a></li><li><a href="global.html#MongooseValidationError">MongooseValidationError</a></li><li><a href="global.html#oauthSetup">oauthSetup</a></li><li><a href="global.html#PermissionError">PermissionError</a></li><li><a href="global.html#Project">Project</a></li><li><a href="global.html#ProjectError">ProjectError</a></li><li><a href="global.html#ProjectSchema">ProjectSchema</a></li><li><a href="global.html#redisSetup">redisSetup</a></li><li><a href="global.html#RootMutations">RootMutations</a></li><li><a href="global.html#RootQuery">RootQuery</a></li><li><a href="global.html#RootSchema">RootSchema</a></li><li><a href="global.html#RootSubscription">RootSubscription</a></li><li><a href="global.html#storeSetup">storeSetup</a></li><li><a href="global.html#User">User</a></li><li><a href="global.html#UserSchema">UserSchema</a></li></ul>
 </nav>
 
 <br class="clear">

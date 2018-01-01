@@ -6,63 +6,53 @@ import ImageSchema from './image';
 
 const Schema = mongoose.Schema;
 
-const MiradorManifestSchema = new Schema({
+const ManifestSchema = new Schema({
 	_id: {
 		type: String,
 		default: shortid.generate
 	},
 	title: {
 		type: String,
-		required: true,
-		trim: true,
-		index: true
+	},
+	description: {
+		type: String,
 	},
 	label: {
 		type: String,
-		required: true,
-		trim: true,
-		index: true
 	},
 	abbr: {
 		type: String,
-		required: true,
-		trim: true,
-		index: true
 	},
 	author: {
 		type: String,
-		required: true,
-		trim: true,
-		index: true
 	},
 	seeAlso: {
 		type: String,
-		required: true,
-		trim: true,
-		index: true
 	},
 	attribution: {
 		type: String,
-		required: true,
-		trim: true,
-		index: true
 	},
 	remoteUri: {
 		type: String,
 	},
 	images: [ImageSchema],
+	itemId: {
+		type: String,
+		ref: 'Item',
+		index: true
+	},
 });
 
 
 // add timestamp (createdAt, updatedAt)
-MiradorManifestSchema.plugin(timestamp);
+ManifestSchema.plugin(timestamp);
 
 // add slug (slug)
-MiradorManifestSchema.plugin(URLSlugs('title', {
+ManifestSchema.plugin(URLSlugs('title', {
 	indexUnique: false,
 }));
 
-const MiradorManifest = mongoose.model('miradorManifest', MiradorManifestSchema);
+const Manifest = mongoose.model('manifest', ManifestSchema);
 
-export default MiradorManifest;
-export { MiradorManifestSchema };
+export default Manifest;
+export { ManifestSchema };

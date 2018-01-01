@@ -40,6 +40,8 @@ import EmailManager from './email';
 // Routes
 import authenticationRouter from './authentication/routes';
 
+// services
+import ManifestService from './graphql/logic/manifests';
 
 // environment variables setup
 dotenvSetup();
@@ -88,6 +90,21 @@ oauthSetup(app);
 
 // Routes
 app.use('/auth', authenticationRouter);
+
+
+// handle manifest creation service
+app.post('/manifests', async (req, res) => {
+	const token = '';
+	const manifestService = new ManifestService(token);
+	const update = req.body;
+
+	await manifestService.update({
+		_id: update.manifestId,
+		remoteUri: update.remoteUri,
+	});
+});
+
+
 
 function listen() {
 	app.listen(app.get('port'), () => {

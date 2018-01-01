@@ -38,156 +38,156 @@ import Collection from '../../models/collection';
 
 // errors
 import {
-	AuthenticationError,
-	PermissionError,
-	ProjectError,
-	ArgumentError,
-	// MongooseGeneralError,
-	// MongooseDuplicateKeyError,
-	// MongooseValidationError,
-	handleMongooseError,
+  AuthenticationError,
+  PermissionError,
+  ProjectError,
+  ArgumentError,
+  // MongooseGeneralError,
+  // MongooseDuplicateKeyError,
+  // MongooseValidationError,
+  handleMongooseError,
 } from '../errors';
 
 
 const itemMutationFields = {
-	itemCreate: {
-		type: ItemType,
-		description: 'Create new item',
-		args: {
-			item: {
-				type: new GraphQLNonNull(ItemInputType),
-			},
-		},
-		async resolve(obj, { item }, { user, project }) {
-			/**
-			 * Initiate item
-			 */
-			const NewItem = new Item(item);
+  itemCreate: {
+    type: ItemType,
+    description: 'Create new item',
+    args: {
+      item: {
+        type: new GraphQLNonNull(ItemInputType),
+      },
+    },
+    async resolve(obj, { item }, { user, project }) {
+      /**
+       * Initiate item
+       */
+      const NewItem = new Item(item);
 
-			// save new item
-			try {
-				return await NewItem.save();
-			} catch (err) {
-				handleMongooseError(err);
-			}
-		},
-	},
+      // save new item
+      try {
+        return await NewItem.save();
+      } catch (err) {
+        handleMongooseError(err);
+      }
+    },
+  },
 
-	itemUpdate: {
-		type: ItemType,
-		description: 'Update item',
-		args: {
-			item: {
-				type: new GraphQLNonNull(ItemInputType),
-			},
-			itemId: {
-				type: new GraphQLNonNull(GraphQLID),
-			}
-		},
-		async resolve(parent, { item, itemId }, { user, project }) {
+  itemUpdate: {
+    type: ItemType,
+    description: 'Update item',
+    args: {
+      item: {
+        type: new GraphQLNonNull(ItemInputType),
+      },
+      itemId: {
+        type: new GraphQLNonNull(GraphQLID),
+      }
+    },
+    async resolve(parent, { item, itemId }, { user, project }) {
 
-			/**
-			 * Validate connection
-			 */
+      /**
+       * Validate connection
+       */
 
-			// if operation doesn't come from admin page
-			if (!project.adminPage) throw new ProjectError();
+      // if operation doesn't come from admin page
+      if (!project.adminPage) throw new ProjectError();
 
-			// if user is not logged in
-			if (!user) throw new AuthenticationError();
-
-
-			/**
-			 * Initiate item
-			 */
-			const FoundItem = await Item.findById(itemId);
-			if (!FoundItem) throw new ArgumentError({ data: { field: 'itemId' } });
+      // if user is not logged in
+      if (!user) throw new AuthenticationError();
 
 
-			/**
-			 * Validate permissions
-			 */
-			try {
-				const userIsAdmin = await FoundItem.validateUser(user._id);
-				if (!userIsAdmin) throw new PermissionError();
-			} catch (err) {
-				throw new PermissionError();
-			}
+      /**
+       * Initiate item
+       */
+      const FoundItem = await Item.findById(itemId);
+      if (!FoundItem) throw new ArgumentError({ data: { field: 'itemId' } });
+
+
+      /**
+       * Validate permissions
+       */
+      try {
+        const userIsAdmin = await FoundItem.validateUser(user._id);
+        if (!userIsAdmin) throw new PermissionError();
+      } catch (err) {
+        throw new PermissionError();
+      }
 
 
 
-			/**
-			 * Perform action
-			 */
+      /**
+       * Perform action
+       */
 
-			// update item
-			Object.keys(item).forEach((key) => {
-				FoundItem[key] = item[key];
-			});
+      // update item
+      Object.keys(item).forEach((key) => {
+        FoundItem[key] = item[key];
+      });
 
-			// Save new item
-			try {
-				return await FoundItem.save();
-			} catch (err) {
-				handleMongooseError(err);
-			}
-		}
-	},
+      // Save new item
+      try {
+        return await FoundItem.save();
+      } catch (err) {
+        handleMongooseError(err);
+      }
+    }
+  },
 
-	itemRemove: {
-		type: RemoveType,
-		description: 'Remove item',
-		args: {
-			itemId: {
-				type: new GraphQLNonNull(GraphQLID),
-			}
-		},
-		async resolve(parent, { itemId }, { user, project }) {
+  itemRemove: {
+    type: RemoveType,
+    description: 'Remove item',
+    args: {
+      itemId: {
+        type: new GraphQLNonNull(GraphQLID),
+      }
+    },
+    async resolve(parent, { itemId }, { user, project }) {
 
-			/**
-			 * Validate connection
-			 */
+      /**
+       * Validate connection
+       */
 
-			// if operation doesn't come from admin page
-			if (!project.adminPage) throw new ProjectError();
+      // if operation doesn't come from admin page
+      if (!project.adminPage) throw new ProjectError();
 
-			// if user is not logged in
-			if (!user) throw new AuthenticationError();
-
-
-			/**
-			 * Initiate item
-			 */
-			const FoundItem = await Item.findById(itemId);
-			if (!FoundItem) throw new ArgumentError({ data: { field: 'itemId' } });
+      // if user is not logged in
+      if (!user) throw new AuthenticationError();
 
 
-			/**
-			 * Validate permissions
-			 */
-			try {
-				const userIsAdmin = await FoundItem.validateUser(user._id);
-				if (!userIsAdmin) throw new PermissionError();
-			} catch (err) {
-				throw new PermissionError();
-			}
+      /**
+       * Initiate item
+       */
+      const FoundItem = await Item.findById(itemId);
+      if (!FoundItem) throw new ArgumentError({ data: { field: 'itemId' } });
 
 
-			/**
-			 * Perform action
-			 */
+      /**
+       * Validate permissions
+       */
+      try {
+        const userIsAdmin = await FoundItem.validateUser(user._id);
+        if (!userIsAdmin) throw new PermissionError();
+      } catch (err) {
+        throw new PermissionError();
+      }
 
-			// Save new item
-			try {
-				await FoundItem.remove();
-				return {
-					_id: itemId,
-				};
-			} catch (err) {
-				handleMongooseError(err);
-			}
-		}
-	},
+
+      /**
+       * Perform action
+       */
+
+      // Save new item
+      try {
+        await FoundItem.remove();
+        return {
+          _id: itemId,
+        };
+      } catch (err) {
+        handleMongooseError(err);
+      }
+    }
+  },
 };
 
 export default itemMutationFields;
@@ -201,7 +201,7 @@ export default itemMutationFields;
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="EmailManager.html">EmailManager</a></li></ul><h3>Global</h3><ul><li><a href="global.html#ArgumentError">ArgumentError</a></li><li><a href="global.html#AuthenticationError">AuthenticationError</a></li><li><a href="global.html#closeDB">closeDB</a></li><li><a href="global.html#Collection">Collection</a></li><li><a href="global.html#CollectionSchema">CollectionSchema</a></li><li><a href="global.html#dbSetup">dbSetup</a></li><li><a href="global.html#File">File</a></li><li><a href="global.html#FileSchema">FileSchema</a></li><li><a href="global.html#generateJWT">generateJWT</a></li><li><a href="global.html#getURL">getURL</a></li><li><a href="global.html#handleMongooseError">handleMongooseError</a></li><li><a href="global.html#Item">Item</a></li><li><a href="global.html#ItemSchema">ItemSchema</a></li><li><a href="global.html#jwtAuthenticate">jwtAuthenticate</a></li><li><a href="global.html#loginOAuth1">loginOAuth1</a></li><li><a href="global.html#loginOAuth2">loginOAuth2</a></li><li><a href="global.html#loginPWD">loginPWD</a></li><li><a href="global.html#miradorQueryFields">miradorQueryFields</a></li><li><a href="global.html#MongooseDuplicateKeyError">MongooseDuplicateKeyError</a></li><li><a href="global.html#MongooseGeneralError">MongooseGeneralError</a></li><li><a href="global.html#MongooseValidationError">MongooseValidationError</a></li><li><a href="global.html#oauthSetup">oauthSetup</a></li><li><a href="global.html#PermissionError">PermissionError</a></li><li><a href="global.html#Project">Project</a></li><li><a href="global.html#ProjectError">ProjectError</a></li><li><a href="global.html#ProjectSchema">ProjectSchema</a></li><li><a href="global.html#redisSetup">redisSetup</a></li><li><a href="global.html#RootMutations">RootMutations</a></li><li><a href="global.html#RootQuery">RootQuery</a></li><li><a href="global.html#RootSchema">RootSchema</a></li><li><a href="global.html#RootSubscription">RootSubscription</a></li><li><a href="global.html#storeSetup">storeSetup</a></li><li><a href="global.html#User">User</a></li><li><a href="global.html#UserSchema">UserSchema</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="EmailManager.html">EmailManager</a></li></ul><h3>Global</h3><ul><li><a href="global.html#ArgumentError">ArgumentError</a></li><li><a href="global.html#AuthenticationError">AuthenticationError</a></li><li><a href="global.html#closeDB">closeDB</a></li><li><a href="global.html#Collection">Collection</a></li><li><a href="global.html#CollectionSchema">CollectionSchema</a></li><li><a href="global.html#dbSetup">dbSetup</a></li><li><a href="global.html#File">File</a></li><li><a href="global.html#FileSchema">FileSchema</a></li><li><a href="global.html#generateJWT">generateJWT</a></li><li><a href="global.html#getURL">getURL</a></li><li><a href="global.html#handleMongooseError">handleMongooseError</a></li><li><a href="global.html#Item">Item</a></li><li><a href="global.html#ItemSchema">ItemSchema</a></li><li><a href="global.html#jwtAuthenticate">jwtAuthenticate</a></li><li><a href="global.html#loginOAuth1">loginOAuth1</a></li><li><a href="global.html#loginOAuth2">loginOAuth2</a></li><li><a href="global.html#loginPWD">loginPWD</a></li><li><a href="global.html#manifestQueryFields">manifestQueryFields</a></li><li><a href="global.html#MongooseDuplicateKeyError">MongooseDuplicateKeyError</a></li><li><a href="global.html#MongooseGeneralError">MongooseGeneralError</a></li><li><a href="global.html#MongooseValidationError">MongooseValidationError</a></li><li><a href="global.html#oauthSetup">oauthSetup</a></li><li><a href="global.html#PermissionError">PermissionError</a></li><li><a href="global.html#Project">Project</a></li><li><a href="global.html#ProjectError">ProjectError</a></li><li><a href="global.html#ProjectSchema">ProjectSchema</a></li><li><a href="global.html#redisSetup">redisSetup</a></li><li><a href="global.html#RootMutations">RootMutations</a></li><li><a href="global.html#RootQuery">RootQuery</a></li><li><a href="global.html#RootSchema">RootSchema</a></li><li><a href="global.html#RootSubscription">RootSubscription</a></li><li><a href="global.html#storeSetup">storeSetup</a></li><li><a href="global.html#User">User</a></li><li><a href="global.html#UserSchema">UserSchema</a></li></ul>
 </nav>
 
 <br class="clear">
