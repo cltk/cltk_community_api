@@ -1,6 +1,7 @@
 import _s from 'underscore.string';
 import shortid from 'shortid';
 import rp from 'request-promise';
+import request from 'request';
 
 // services
 import PermissionsService from './PermissionsService';
@@ -141,28 +142,49 @@ export default class ItemService extends PermissionsService {
 				await newFile.save();
 			});
 
-			// create item manifest
-			let manifest = {
+			const images = [];
+			files.forEach((file) => {
+				let newImageName = file.name;
+				newImageName = newImageName.replace(`${file._id}-`, '');
+
+				images.push({
+					_id: file._id,
+					name: newImageName,
+					label: file.title,
+				});
+			});
+
+			// update item manifest
+			const manifest = {
+				itemId: item._id,
 				title: item.title,
+				label: item.title,
 				description: item.description,
 				attribution: project.title,
-				images: files,
+				images,
 			};
 
-			manifest = new Manifest(manifest);
-			await manifest.save();
+			let existingManifest = Manifest.findOne({ itemId: manifest.itemId });
+			if (!existingManifest) {
+				existingManifest = new Manifest(manifest);
+				await manifest.save();
+				existingManifest = Manifest.findOne({ itemId: manifest.itemId });
+			} else {
+				await Manifest.update({
+					itemId: manifest.itemId,
+				}, {
+					$set: manifest
+				});
+			}
 
-			const manifestPostOptions = {
-				method: 'POST',
-				uri: 'http://generate-manifests.orphe.us/manifests',
-				body: {
-					manifest,
-					responseUrl: 'http://c43a224e.ngrok.io', // process.env.MANIFEST_RESPONSE_URL,
+			manifest._id = existingManifest._id;
+
+			const manifestCreationResult = await request.post('http://generate-manifests.orphe.us/manifests', {
+				form: {
+					manifest: JSON.stringify(manifest),
+					responseUrl: 'http://c43a224e.ngrok.io/manifests', // process.env.MANIFEST_RESPONSE_URL,
 				},
-				json: true,
-			};
-
-			const manifestCreationResult = await rp(options);
+			});
 		}
 
 		// return new item
@@ -206,38 +228,49 @@ export default class ItemService extends PermissionsService {
 				});
 			});
 
+			const images = [];
+			files.forEach((file) => {
+				let newImageName = file.name;
+				newImageName = newImageName.replace(`${file._id}-`, '');
+
+				images.push({
+					_id: file._id,
+					name: newImageName,
+					label: file.title,
+				});
+			});
 
 			// update item manifest
 			const manifest = {
+				itemId: item._id,
 				title: item.title,
+				label: item.title,
 				description: item.description,
 				attribution: project.title,
-				images: files,
+				images,
 			};
 
-			if (!('_id' in manifest)) {
-				manifest._id = shortid.generate();
+			let existingManifest = Manifest.findOne({ itemId: manifest.itemId });
+			if (!existingManifest) {
+				existingManifest = new Manifest(manifest);
+				await manifest.save();
+				existingManifest = Manifest.findOne({ itemId: manifest.itemId });
+			} else {
+				await Manifest.update({
+					itemId: manifest.itemId,
+				}, {
+					$set: manifest
+				});
 			}
-			const updatedManifest =	await Manifest.findOneAndUpdate({
-				_id: manifest._id,
-			}, {
-				$set: manifest
-			}, {
-				upsert: true,
-			});
 
+			manifest._id = existingManifest._id;
 
-			const manifestPostOptions = {
-				method: 'POST',
-				uri: 'http://generate-manifests.orphe.us/manifests',
-				body: {
-					manifest: updatedManifest,
-					responseUrl: 'http://c43a224e.ngrok.io', // process.env.MANIFEST_RESPONSE_URL,
+			const manifestCreationResult = await request.post('http://generate-manifests.orphe.us/manifests', {
+				form: {
+					manifest: JSON.stringify(manifest),
+					responseUrl: 'http://c43a224e.ngrok.io/manifests', // process.env.MANIFEST_RESPONSE_URL,
 				},
-				json: true,
-			};
-
-			const manifestCreationResult = await rp(manifestPostOptions);
+			});
 		}
 
 		// perform action

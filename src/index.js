@@ -60,9 +60,10 @@ if (process.env.NODE_ENV === 'production') {
 
 app.use(logger('dev'));
 app.use(cookieParser());
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({
 	extended: false,
+	limit: '50mb',
 }));
 
 // session:
@@ -100,7 +101,7 @@ app.post('/manifests', async (req, res) => {
 
 	await manifestService.update({
 		_id: update.manifestId,
-		remoteUri: update.remoteUri,
+		remoteUri: update.manifestUri,
 	});
 });
 

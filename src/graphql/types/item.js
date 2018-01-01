@@ -13,6 +13,7 @@ import ManifestType from './manifest';
 import ItemService from '../logic/items';
 import FileService from '../logic/files';
 import CommentService from '../logic/comments';
+import ManifestService from '../logic/manifests';
 
 // models
 import Item from '../../models/item';

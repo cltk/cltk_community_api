@@ -76,16 +76,20 @@ export default class ManifestService extends PermissionsService {
 
 	/**
 	 * Get manifest
-	 * @param {string} projectId - id of item of manifest
+	 * @param {string} itemId - id of item of manifest
 	 * @param {number} _id - id of manifest
 	 * @param {string} slug - slug of manifest
 	 * @returns {Object[]} array of manifests
 	 */
-	async getManifest({ projectId, _id, slug }) {
+	async getManifest({ itemId, _id, slug }) {
 		const where = {};
 
-		if (!_id && !slug) {
+		if (!itemId && !_id && !slug) {
 			return null;
+		}
+
+		if (itemId) {
+			where.itemId = itemId;
 		}
 
 		if (_id) {
@@ -133,15 +137,15 @@ export default class ManifestService extends PermissionsService {
 	 */
 	async update(manifest) {
 		// if user is not logged in
-		if (!this.userId) throw new AuthenticationError();
+		// if (!this.userId) throw new AuthenticationError();
 
 		// find project
-		const project = await Project.findOne(manifest.projectId);
-		if (!project) throw new ArgumentError({ data: { field: 'manifest.projectId' } });
+		// const project = await Project.findOne(manifest.projectId);
+		// if (!project) throw new ArgumentError({ data: { field: 'manifest.projectId' } });
 
 		// validate permissions
-		const userIsAdmin = this.userIsProjectAdmin(project);
-		if (!userIsAdmin) throw new PermissionError();
+		// const userIsAdmin = this.userIsProjectAdmin(project);
+		// if (!userIsAdmin) throw new PermissionError();
 
 		// perform action
 		const result = await Manifest.update({ _id: manifest._id }, { $set: manifest });
