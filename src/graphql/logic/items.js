@@ -16,10 +16,35 @@ import Project from '../../models/project';
 import { AuthenticationError, PermissionError } from '../errors';
 
 
+const saveFiles = async (project, item, files) => {
+
+	const existingFiles = await File.find({
+		itemId: item._id
+	});
+
+	// remove all existing files
+	existingFiles.forEach(async (existingFile) => {
+		await File.remove({
+			_id: existingFile._id,
+		});
+	});
+
+	files.forEach(async (file) => {
+		if (!('_id' in file)) {
+			file._id = shortid.generate();
+		}
+
+		// relationships
+		file.itemId = item._id;
+		file.projectId = project._id;
+
+		const newFile = new File(file);
+		await newFile.save();
+	});
+};
 
 
-
-const createManifest = async (project, item, files) => {
+const saveManifest = async (project, item, files) => {
 	const images = [];
 	files.forEach((file) => {
 		let newImageName = file.name;
@@ -180,18 +205,8 @@ export default class ItemService extends PermissionsService {
 		await newItem.save();
 
 		if (files) {
-
-			// save files and add ids to item
-			files.forEach(async (file) => {
-				// relationships
-				file.itemId = newItem._id;
-				file.projectId = project._id;
-
-				const newFile = new File(file);
-				await newFile.save();
-			});
-
-			await createManifest(project, item, files);
+			await saveFiles(project, newItem, files);
+			await saveManifest(project, newItem, files);
 		}
 
 		// return new item
@@ -208,44 +223,28 @@ export default class ItemService extends PermissionsService {
 		if (!this.userId) throw new AuthenticationError();
 
 		// find project
-		const project = await Project.findOne(item.projectId);
+		const project = await Project.findOne({ _id: item.projectId });
 		if (!project) throw new ArgumentError({ data: { field: 'item.projectId' } });
 
 		// validate permissions
 		const userIsAdmin = this.userIsProjectAdmin(project);
 		if (!userIsAdmin) throw new PermissionError();
 
-		// save files and add ids to item
-		if (files) {
-			files.forEach(async (file) => {
-				if (!('_id' in file)) {
-					file._id = shortid.generate();
-				}
-
-				// relationships
-				file.itemId = item._id;
-				file.projectId = project._id;
-
-				await File.findOneAndUpdate({
-					_id: file._id
-				}, {
-					$set: file
-				}, {
-					upsert: true,
-				});
-			});
-
-			await createManifest(project, item, files);
-		}
-
 		// perform action
 		const result = await Item.update({ _id: item._id }, { $set: item });
+		const updatedItem = await Item.findById(item._id);
+
+		// save files and add ids to item
+		if (files) {
+			await saveFiles(project, updatedItem, files);
+			await saveManifest(project, updatedItem, files);
+		}
 
 		// TODO
 		// error handling
 
 		// return updated item
-		return await Item.findById(item._id);
+		return updatedItem;
 	}
 
 	/**
