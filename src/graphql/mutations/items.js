@@ -52,13 +52,16 @@ const itemMutationFields = {
 		type: RemoveType,
 		description: 'Remove item',
 		args: {
-			itemId: {
-				type: new GraphQLNonNull(GraphQLID),
-			}
+			_id: {
+				type: new GraphQLNonNull(GraphQLString),
+			},
+			hostname: {
+				type: new GraphQLNonNull(GraphQLString)
+			},
 		},
-		async resolve(parent, { itemId }, { token }) {
+		async resolve(parent, { _id, hostname }, { token }) {
 			const itemService = new ItemService(token);
-			return await itemService.remove(itemId);
+			return await itemService.remove(_id, hostname);
 		}
 	},
 };

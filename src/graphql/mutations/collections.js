@@ -49,13 +49,16 @@ const collectionMutationFields = {
 		type: RemoveType,
 		description: 'Remove collection',
 		args: {
-			collectionId: {
-				type: new GraphQLNonNull(GraphQLID),
-			}
+			_id: {
+				type: new GraphQLNonNull(GraphQLString),
+			},
+			hostname: {
+				type: new GraphQLNonNull(GraphQLString)
+			},
 		},
-		async resolve (_, { collectionId }, { token }) {
+		async resolve (_, { _id, hostname }, { token }) {
 			const collectionService = new CollectionService(token);
-			return await collectionService.remove(collectionId);
+			return await collectionService.remove(_id, hostname);
 		}
 	}
 };

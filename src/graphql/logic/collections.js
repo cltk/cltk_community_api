@@ -169,14 +169,15 @@ export default class CollectionService extends PermissionsService {
 	/**
 	 * Remove a collection
 	 * @param {string} _id - id of collection to Remove
+	 * @param {string} hostname - hostname of project to check permissions against
 	 * @returns {boolean} remove result
 	 */
-	async remove(_id) {
+	async remove(_id, hostname) {
 		// if user is not logged in
 		if (!this.userId) throw new AuthenticationError();
 
 		// get project
-		const project = await Project.findById(collection.projectId);
+		const project = await Project.findOne({ hostname });
 		if (!project) throw new ArgumentError({ data: { field: 'collection.projectId' } });
 
 		// validate permissions

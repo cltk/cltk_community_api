@@ -60,13 +60,16 @@ const articleMutationFields = {
 		type: RemoveType,
 		description: 'Remove article',
 		args: {
-			articleId: {
-				type: new GraphQLNonNull(GraphQLID),
-			}
+			_id: {
+				type: new GraphQLNonNull(GraphQLString),
+			},
+			hostname: {
+				type: new GraphQLNonNull(GraphQLString)
+			},
 		},
-		async resolve (_, { articleId }, { token }) {
+		async resolve (_, { _id, hostname }, { token }) {
 			const articleService = new ArticleService(token);
-			return await articleService.remove(articleId);
+			return await articleService.remove(_id, hostname);
 		}
 	}
 };

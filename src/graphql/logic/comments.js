@@ -130,14 +130,15 @@ export default class CommentService extends PermissionsService {
 	/**
 	 * Remove a comment
 	 * @param {string} _id - id of comment to Remove
+	 * @param {string} hostname - hostname of project to check permissions against
 	 * @returns {boolean} remove result
 	 */
-	async remove(_id) {
+	async remove(_id, hostname) {
 		// if user is not logged in
 		if (!this.userId) throw new AuthenticationError();
 
 		// get project
-		const project = await Project.findById(comment.projectId);
+		const project = await Project.findOne({ hostname });
 		if (!project) throw new ArgumentError({ data: { field: 'comment.projectId' } });
 
 		// validate permissions

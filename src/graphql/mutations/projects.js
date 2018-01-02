@@ -42,12 +42,15 @@ const projectMutationFields = {
 		description: 'Remove project',
 		args: {
 			_id: {
-				type: new GraphQLNonNull(GraphQLID),
-			}
+				type: new GraphQLNonNull(GraphQLString),
+			},
+			hostname: {
+				type: new GraphQLNonNull(GraphQLString)
+			},
 		},
-		async resolve (parent, { _id }, { token }) {
+		async resolve (parent, { _id, hostname }, { token }) {
 			const projectService = new ProjectService(token);
-			return await projectService.remove(_id);
+			return await projectService.remove(_id, hostname);
 		},
 	},
 };

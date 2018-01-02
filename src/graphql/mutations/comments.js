@@ -43,13 +43,16 @@ const commentMutationFields = {
 		type: RemoveType,
 		description: 'Remove comment',
 		args: {
-			commentId: {
-				type: new GraphQLNonNull(GraphQLID),
-			}
+			_id: {
+				type: new GraphQLNonNull(GraphQLString),
+			},
+			hostname: {
+				type: new GraphQLNonNull(GraphQLString)
+			},
 		},
-		async resolve (_, { commentId }, { token }) {
+		async resolve (_, { _id, hostname }, { token }) {
 			const commentService = new CommentService(token);
-			return await commentService.remove(commentId);
+			return await commentService.remove(_id, hostname);
 		}
 	}
 };

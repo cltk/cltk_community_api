@@ -250,14 +250,15 @@ export default class ItemService extends PermissionsService {
 	/**
 	 * Remove a item
 	 * @param {string} _id - id of item to Remove
+	 * @param {string} hostname - hostname of project to check permissions against
 	 * @returns {boolean} remove result
 	 */
-	async remove(_id) {
+	async remove(_id, hostname) {
 		// if user is not logged in
 		if (!this.userId) throw new AuthenticationError();
 
 		// find project
-		const project = await Project.findOne(hostname);
+		const project = await Project.findOne({ hostname });
 		if (!project) throw new ArgumentError({ data: { field: 'hostname' } });
 
 		// validate permissions

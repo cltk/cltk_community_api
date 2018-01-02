@@ -148,14 +148,15 @@ export default class ProjectService extends PermissionsService {
 	/**
 	 * Remove a project
 	 * @param {string} _id - id of project to Remove
+	 * @param {string} hostname - hostname of project to check permissions against
 	 * @returns {boolean} remove result
 	 */
-	async remove(_id) {
+	async remove(_id, hostname) {
 		// if user is not logged in
 		if (!this.userId) throw new AuthenticationError();
 
 		// initiate project
-		const foundProject = await Project.findById(projectId);
+		const foundProject = await Project.findOne({ hostname, });
 		if (!foundProject) throw new ArgumentError({ data: { field: 'projectId' } });
 
 		// validate permissions
