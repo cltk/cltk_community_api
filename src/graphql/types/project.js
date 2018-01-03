@@ -13,6 +13,7 @@ import ArticleService from '../logic/articles';
 import FileService from '../logic/files';
 import ItemService from '../logic/items';
 import ProjectService from '../logic/projects';
+import TextService from '../logic/texts';
 import UserService from '../logic/users';
 import PageService from '../logic/pages';
 
@@ -22,6 +23,7 @@ import ArticleType from './article';
 import FileType from './file';
 import ItemType from './item';
 import ActivityItemType from './activityItem';
+import TextType from './text';
 import UserType from './user';
 import PageType from './page';
 
@@ -254,7 +256,7 @@ const config = {
 		},
 		files: {
 			type: new GraphQLList(FileType),
-			description: 'Get item files',
+			description: 'Get project files',
 			resolve(parent, args, { token }) {
 				const fileService = new FileService(token);
 				return fileService.getFiles({ projectId: parent._id });
@@ -275,10 +277,39 @@ const config = {
 		},
 		filesCount: {
 			type: GraphQLInt,
-			description: 'Count all item files',
+			description: 'Count all project files',
 			resolve(parent, args, { token }) {
 				const fileService = new FileService(token);
 				return fileService.count({ projectId: parent._id });
+			}
+		},
+		texts: {
+			type: new GraphQLList(TextType),
+			description: 'Get project texts',
+			resolve(parent, args, { token }) {
+				const textService = new TextService(token);
+				return textService.getTexts({ projectId: parent._id });
+			}
+		},
+		text: {
+			type: TextType,
+			description: 'Get a project text',
+			args: {
+				_id: {
+					type: GraphQLString,
+				},
+			},
+			resolve(parent, { _id }, { token }) {
+				const textService = new TextService(token);
+				return textService.getText({ projectId: parent._id, _id });
+			}
+		},
+		textsCount: {
+			type: GraphQLInt,
+			description: 'Count all project texts',
+			resolve(parent, args, { token }) {
+				const textService = new TextService(token);
+				return textService.count({ projectId: parent._id });
 			}
 		},
 	},

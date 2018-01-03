@@ -1,6 +1,10 @@
 import { graphqlExpress, graphiqlExpress } from 'graphql-server-express';
 import { formatError } from 'apollo-errors';
 import { GraphQLSchema, execute, subscribe } from 'graphql';
+import {
+	makeRemoteExecutableSchema, mergeSchemas, introspectSchema
+} from 'graphql-tools';
+import { createApolloFetch } from 'apollo-fetch';
 import { maskErrors } from 'graphql-errors';
 import { createServer } from 'http';
 // import { PubSub } from 'graphql-subscriptions';
@@ -20,6 +24,18 @@ import RootSubscription from './graphql/subscriptions/rootSubscription';
 // models
 import User from './models/user';
 
+/**
+ * Create a remote schema for merging with local schema definition
+ * via example Schema stitching from the repo mentioned here:
+ * https://dev-blog.apollodata.com/graphql-schema-stitching-8af23354ac37
+ */
+const createRemoteSchema = async (uri: string) => {
+	const fetcher = createApolloFetch({uri});
+	return makeRemoteExecutableSchema({
+		schema: await introspectSchema(fetcher),
+		fetcher
+	});
+};
 
 /**
  * Root schema
@@ -58,10 +74,16 @@ const getGraphQLContext = (req) => {
  * Set up the graphQL HTTP endpoint
  * @param  {Object} app 	express app instance
  */
-export default function setupGraphql(app) {
+const setupGraphql = async (app) => {
+	const chsTextserverSchema = await createRemoteSchema('http://text.chs.orphe.us/graphql');
+
+	const schema = mergeSchemas({
+		schemas: [RootSchema, chsTextserverSchema],
+	});
+
 
 	app.use('/graphql', jwtAuthenticate, graphqlExpress(req => ({
-		schema: RootSchema,
+		schema,
 		context: getGraphQLContext(req),
 		formatError,
 	})));
@@ -90,4 +112,6 @@ export default function setupGraphql(app) {
 		});
 	});
 	*/
-}
+};
+
+export default setupGraphql;
