@@ -18,10 +18,11 @@ import { AuthenticationError, PermissionError, ArgumentError } from '../errors';
 export default class CommentService extends PermissionsService {
 	/**
 	 * Count comments
+	 * @param {string} projectId
 	 * @returns {number} count of comments
 	 */
-	async count() {
-		return await Comment.count();
+	async count({ projectId }) {
+		return await Comment.count({ projectId });
 	}
 
 	/**

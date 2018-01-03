@@ -20,8 +20,8 @@ export default class PageService extends PermissionsService {
 	 * Count pages
 	 * @returns {number} count of pages
 	 */
-	async count() {
-		return await Page.count();
+	async count({ projectId }) {
+		return await Page.count({ projectId });
 	}
 
 	/**

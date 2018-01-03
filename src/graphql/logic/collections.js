@@ -19,10 +19,11 @@ import { AuthenticationError, PermissionError, ArgumentError } from '../errors';
 export default class CollectionService extends PermissionsService {
 	/**
 	 * Count collections
+	 * @param {string} projectId
 	 * @returns {number} count of collections
 	 */
-	async count() {
-		return await Collection.count();
+	async count({ projectId }) {
+		return await Collection.count({ projectId });
 	}
 
 	/**

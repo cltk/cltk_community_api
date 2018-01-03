@@ -18,23 +18,18 @@ import { AuthenticationError, PermissionError } from '../errors';
 export default class TextService extends PermissionsService {
 	/**
 	 * Count texts
-	 * @param {string} itemId
 	 * @param {string} projectId
 	 * @returns {number} count of texts
 	 */
-	async count({ itemId, projectId }) {
+	async count({ projectId }) {
 		const args = {};
 
-		if (!itemId && !projectId) {
+		if (!projectId) {
 			return 0;
 		}
 
 		if (projectId) {
 			args.projectId = projectId;
-		}
-
-		if (itemId) {
-			args.itemId = itemId;
 		}
 
 		return await Text.count(args);

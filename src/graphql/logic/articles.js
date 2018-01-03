@@ -18,10 +18,11 @@ import { AuthenticationError, PermissionError, ArgumentError } from '../errors';
 export default class ArticleService extends PermissionsService {
 	/**
 	 * Count articles
+	 * @param {string} projectId
 	 * @returns {number} count of articles
 	 */
-	async count() {
-		return await Article.count();
+	async count({ projectId }) {
+		return await Article.count({ projectId });
 	}
 
 	/**
