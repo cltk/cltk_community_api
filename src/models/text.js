@@ -26,7 +26,7 @@ const TextSchema = new Schema({
 		required: true,
 		trim: true,
 	},
-	textgroup: {
+	textGroup: {
 		type: String,
 		required: true,
 		trim: true,
