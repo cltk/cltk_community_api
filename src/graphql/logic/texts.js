@@ -153,12 +153,12 @@ export default class TextService extends PermissionsService {
 	 * @param {string} _id - id of text to Remove
 	 * @returns {boolean} remove result
 	 */
-	async remove(_id) {
+	async remove(_id, hostname) {
 		// if user is not logged in
 		if (!this.userId) throw new AuthenticationError();
 
 		// find project
-		const project = await Project.findOne(hostname);
+		const project = await Project.findOne({ hostname });
 		if (!project) throw new ArgumentError({ data: { field: 'hostname' } });
 
 		// validate permissions

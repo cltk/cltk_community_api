@@ -24,6 +24,11 @@ const ProjectSchema = new Schema({
 	subtitle: {
 		type: String,
 	},
+	status: {
+		type: String,
+		required: true,
+		enum: ['private', 'public'],
+	},
 	description: {
 		type: String,
 	},
