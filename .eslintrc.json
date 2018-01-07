@@ -61,7 +61,9 @@
   	"no-unused-vars": "off",
   	"no-prototype-builtins": "off",
 		"import/prefer-default-export": "off",
-  	"react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }]
+  	"react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
+		"array-callback-return": "off",
+		"func-names": "off"
   },
   "settings": {
     "import/resolver": {
