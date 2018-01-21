@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: graphql/mutations/rootMutation.js</title>
+    <title>JSDoc: Source: graphql/types/activityItem.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: graphql/mutations/rootMutation.js</h1>
+    <h1 class="page-title">Source: graphql/types/activityItem.js</h1>
 
     
 
@@ -26,33 +26,36 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>import { GraphQLObjectType } from 'graphql';
+            <pre class="prettyprint source linenums"><code>import { GraphQLString, GraphQLInt, GraphQLObjectType } from 'graphql';
 
-import articleMutationFields from './articles';
-import projectMutationFields from './projects';
-import collectionMutationFields from './collections';
-import itemMutationFields from './items';
-import textMutationFields from './texts';
-import userMutationFields from './users';
+
+import UserType from './user';
 
 /**
- * Root mutations
+ * Activity Item type
  * @type {GraphQLObjectType}
  */
-const RootMutations = new GraphQLObjectType({
-	name: 'RootMutationType',
-	description: 'Root mutation object type',
-	fields: {
-		...projectMutationFields,
-		...articleMutationFields,
-		...collectionMutationFields,
-		...itemMutationFields,
-		...textMutationFields,
-		...userMutationFields,
-	},
+
+const ActivityItemType = new GraphQLObjectType({
+	name: 'ActivityItemType',
+	description: 'An activity item in a project activity feed',
+	fields: () => ({
+		user: {
+			type: UserType,
+		},
+		type: {
+			type: GraphQLString,
+		},
+		excerpt: {
+			type: GraphQLString,
+		},
+		url: {
+			type: GraphQLString,
+		},
+	}),
 });
 
-export default RootMutations;
+export default ActivityItemType;
 </code></pre>
         </article>
     </section>

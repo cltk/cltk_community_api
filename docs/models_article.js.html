@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: graphql/mutations/rootMutation.js</title>
+    <title>JSDoc: Source: models/article.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: graphql/mutations/rootMutation.js</h1>
+    <h1 class="page-title">Source: models/article.js</h1>
 
     
 
@@ -26,33 +26,61 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>import { GraphQLObjectType } from 'graphql';
+            <pre class="prettyprint source linenums"><code>import mongoose from 'mongoose';
+import shortid from 'shortid';
 
-import articleMutationFields from './articles';
-import projectMutationFields from './projects';
-import collectionMutationFields from './collections';
-import itemMutationFields from './items';
-import textMutationFields from './texts';
-import userMutationFields from './users';
+// plug-ins
+import timestamp from 'mongoose-timestamp';
+import URLSlugs from 'mongoose-url-slugs';
+
+// models
+import Project from './project';
+
+const Schema = mongoose.Schema;
 
 /**
- * Root mutations
- * @type {GraphQLObjectType}
+ * Article base schema
+ * @type {Schema}
  */
-const RootMutations = new GraphQLObjectType({
-	name: 'RootMutationType',
-	description: 'Root mutation object type',
-	fields: {
-		...projectMutationFields,
-		...articleMutationFields,
-		...collectionMutationFields,
-		...itemMutationFields,
-		...textMutationFields,
-		...userMutationFields,
+const ArticleSchema = new Schema({
+	_id: {
+		type: String,
+		default: shortid.generate
+	},
+	title: {
+		type: String,
+		required: true,
+		trim: true,
+		index: true
+	},
+	content: {
+		type: String,
+	},
+	projectId: {
+		type: String,
+		ref: 'Project',
+		index: true,
+		required: true,
 	},
 });
 
-export default RootMutations;
+
+// add timestamps (createdAt, updatedAt)
+ArticleSchema.plugin(timestamp);
+
+// add slug (slug)
+ArticleSchema.plugin(URLSlugs('title', {
+	indexUnique: false
+}));
+
+/**
+ * Article mongoose model
+ * @type {Object}
+ */
+const Article = mongoose.model('Article', ArticleSchema);
+
+export default Article;
+export { ArticleSchema };
 </code></pre>
         </article>
     </section>

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: graphql/mutations/rootMutation.js</title>
+    <title>JSDoc: Source: graphql/logic/files.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: graphql/mutations/rootMutation.js</h1>
+    <h1 class="page-title">Source: graphql/logic/files.js</h1>
 
     
 
@@ -26,33 +26,190 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>import { GraphQLObjectType } from 'graphql';
+            <pre class="prettyprint source linenums"><code>import _s from 'underscore.string';
 
-import articleMutationFields from './articles';
-import projectMutationFields from './projects';
-import collectionMutationFields from './collections';
-import itemMutationFields from './items';
-import textMutationFields from './texts';
-import userMutationFields from './users';
+// services
+import PermissionsService from './PermissionsService';
+
+// models
+import File from '../../models/file';
+import Project from '../../models/project';
+
+// errors
+import { AuthenticationError, PermissionError } from '../errors';
+
 
 /**
- * Root mutations
- * @type {GraphQLObjectType}
+ * Logic-layer service for dealing with files
  */
-const RootMutations = new GraphQLObjectType({
-	name: 'RootMutationType',
-	description: 'Root mutation object type',
-	fields: {
-		...projectMutationFields,
-		...articleMutationFields,
-		...collectionMutationFields,
-		...itemMutationFields,
-		...textMutationFields,
-		...userMutationFields,
-	},
-});
 
-export default RootMutations;
+export default class FileService extends PermissionsService {
+	/**
+	 * Count files
+	 * @param {string} itemId
+	 * @param {string} projectId
+	 * @returns {number} count of files
+	 */
+	async count({ itemId, projectId }) {
+		const args = {};
+
+		if (!itemId &amp;&amp; !projectId) {
+			return 0;
+		}
+
+		if (projectId) {
+			args.projectId = projectId;
+		}
+
+		if (itemId) {
+			args.itemId = itemId;
+		}
+
+		return await File.count(args);
+	}
+
+	/**
+	 * Get a list of files
+	 * @param {string} projectId
+	 * @param {string} itemId
+	 * @param {string} textsearch
+	 * @param {number} offset
+	 * @param {number} limit
+	 * @returns {Object[]} array of files
+	 */
+	async getFiles({ projectId, itemId, textsearch, offset, limit }) {
+		const args = {};
+
+		if (!projectId &amp;&amp; !itemId) {
+			return [];
+		}
+
+		if (projectId) {
+			args.projectId = projectId;
+		}
+
+		if (itemId) {
+			args.itemId = itemId;
+		}
+
+		if (textsearch) {
+			args.title = /.*${textsearch}.*/;
+		}
+
+		return await File.find(args)
+			.sort({ createdAt: 1 })
+			.skip(offset)
+			.limit(limit);
+	}
+
+	/**
+	 * Get file
+	 * @param {string} projectId - id of item of file
+	 * @param {number} _id - id of file
+	 * @param {string} slug - slug of file
+	 * @returns {Object[]} array of files
+	 */
+	async getFile({ projectId, _id, slug }) {
+		const where = {};
+
+		if (!_id &amp;&amp; !slug) {
+			return null;
+		}
+
+		if (_id) {
+			where._id = _id;
+		}
+
+		if (slug) {
+			where.slug = slug;
+		}
+
+		return await File.findOne(where);
+	}
+
+	/**
+	 * Create a new file
+	 * @param {Object} file - file candidate
+	 * @param {string} hostname - hostname of file project
+	 * @returns {Object} created file
+	 */
+	async create(hostname, file) {
+		// if user is not logged in
+		if (!this.userId) throw new AuthenticationError();
+
+		// find project
+		const project = await Project.findOne({ hostname });
+		if (!project) throw new ArgumentError({ data: { field: 'hostname' } });
+
+		// validate permissions
+		const userIsAdmin = this.userIsProjectAdmin(project);
+		if (!userIsAdmin) throw new PermissionError();
+
+		// Initiate new file
+		file.projectId = project._id;
+		file.slug = _s.slugify(file.title);
+		const newFile = new File(file);
+
+		// save new file
+		return await newFile.save();
+	}
+
+	/**
+	 * Update a file
+	 * @param {Object} file - file candidate
+	 * @returns {Object} updated file
+	 */
+	async update(file) {
+		// if user is not logged in
+		if (!this.userId) throw new AuthenticationError();
+
+		// find project
+		const project = await Project.findOne(file.projectId);
+		if (!project) throw new ArgumentError({ data: { field: 'file.projectId' } });
+
+		// validate permissions
+		const userIsAdmin = this.userIsProjectAdmin(project);
+		if (!userIsAdmin) throw new PermissionError();
+
+		// perform action
+		const result = await File.update({ _id: file._id }, { $set: file });
+
+		// TODO
+		// error handling
+
+		// return updated file
+		return await File.findById(file._id);
+	}
+
+	/**
+	 * Remove a file
+	 * @param {string} _id - id of file to Remove
+	 * @returns {boolean} remove result
+	 */
+	async remove(_id) {
+		// if user is not logged in
+		if (!this.userId) throw new AuthenticationError();
+
+		// find project
+		const project = await Project.findOne(hostname);
+		if (!project) throw new ArgumentError({ data: { field: 'hostname' } });
+
+		// validate permissions
+		const userIsAdmin = this.userIsProjectAdmin(project);
+		if (!userIsAdmin) throw new PermissionError();
+
+		// perform action
+		const result = await File.remove({ _id });
+
+		// TODO
+		// error handling
+
+		// respond with result
+		return {
+			result,
+		};
+	}
+}
 </code></pre>
         </article>
     </section>

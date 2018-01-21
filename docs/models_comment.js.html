@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: graphql/mutations/rootMutation.js</title>
+    <title>JSDoc: Source: models/comment.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: graphql/mutations/rootMutation.js</h1>
+    <h1 class="page-title">Source: models/comment.js</h1>
 
     
 
@@ -26,33 +26,45 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>import { GraphQLObjectType } from 'graphql';
+            <pre class="prettyprint source linenums"><code>import mongoose from 'mongoose';
 
-import articleMutationFields from './articles';
-import projectMutationFields from './projects';
-import collectionMutationFields from './collections';
-import itemMutationFields from './items';
-import textMutationFields from './texts';
-import userMutationFields from './users';
+// plug-ins
+import timestamp from 'mongoose-timestamp';
+import URLSlugs from 'mongoose-url-slugs';
+import mongoosePaginate from 'mongoose-paginate';
+
+const Schema = mongoose.Schema;
 
 /**
- * Root mutations
- * @type {GraphQLObjectType}
+ * Comment base schema
+ * @type {Schema}
  */
-const RootMutations = new GraphQLObjectType({
-	name: 'RootMutationType',
-	description: 'Root mutation object type',
-	fields: {
-		...projectMutationFields,
-		...articleMutationFields,
-		...collectionMutationFields,
-		...itemMutationFields,
-		...textMutationFields,
-		...userMutationFields,
+const CommentSchema = new Schema({
+	userId: {
+		type: String,
+		required: true,
+	},
+	itemId: {
+		type: String,
+		required: true,
+	},
+	content: {
+		type: String,
 	},
 });
 
-export default RootMutations;
+
+// add timestamps (createdAt, updatedAt)
+CommentSchema.plugin(timestamp);
+
+/**
+ * Comment mongoose model
+ * @type {Object}
+ */
+const Comment = mongoose.model('Comment', CommentSchema);
+
+export default Comment;
+export { CommentSchema };
 </code></pre>
         </article>
     </section>

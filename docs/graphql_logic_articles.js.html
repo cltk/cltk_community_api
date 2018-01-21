@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: graphql/logic/articles.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: graphql/logic/articles.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import _s from 'underscore.string';
+
+// services
+import PermissionsService from './PermissionsService';
+
+// models
+import Article from '../../models/article';
+import Project from '../../models/project';
+
+// errors
+import { AuthenticationError, PermissionError, ArgumentError } from '../errors';
+
+
+/**
+ * Logic-layer service for dealing with articles
+ */
+
+export default class ArticleService extends PermissionsService {
+	/**
+	 * Count articles
+	 * @param {string} projectId
+	 * @returns {number} count of articles
+	 */
+	async count({ projectId }) {
+		return await Article.count({ projectId });
+	}
+
+	/**
+	 * Get a list of articles
+	 * @param {string} projectId
+	 * @param {string} textsearch
+	 * @param {number} offset
+	 * @param {number} limit
+	 * @returns {Object[]} array of articles
+	 */
+	async getArticles({ projectId, textsearch, offset, limit }) {
+		const args = { projectId };
+
+		if (textsearch) {
+			args.title = /.*${textsearch}.*/;
+		}
+
+		return await Article.find(args)
+			.sort({ slug: 1})
+			.skip(offset)
+			.limit(limit);
+	}
+
+	/**
+	 * Get article
+	 * @param {string} projectId - id of the parent project for the article
+	 * @param {number} _id - id of article
+	 * @param {string} slug - slug of article
+	 * @returns {Object[]} array of articles
+	 */
+	async getArticle({ projectId, _id, slug, }) {
+		const where = { projectId };
+
+		if (!_id &amp;&amp; !slug) {
+			return null;
+		}
+
+		if (_id) {
+			where._id = _id;
+		}
+
+		if (slug) {
+			where.slug = slug;
+		}
+
+		return await Article.findOne(where);
+	}
+
+	/**
+	 * Save an article while users are editing
+	 * @param {string} hostname - hostname of the article for the project
+	 * @param {Object} article - article candidate
+	 * @returns {Object} updated article
+	 */
+	async save(hostname, article) {
+		// if user is not logged in
+		if (!this.userId) throw new AuthenticationError();
+
+		const articleProject = await Project.findOne({ hostname });
+
+		// Initiate project
+		if (!articleProject) throw new ArgumentError({ data: { field: 'project.hostname' } });
+
+		// validate permissions
+		const userIsAdmin = this.userIsProjectAdmin(articleProject);
+		if (!userIsAdmin) throw new PermissionError();
+
+		// perform action
+		const existingArticle = await Article.findOne({ _id: article._id });
+		let result;
+		if (existingArticle) {
+			// perform action
+			article.slug = _s.slugify(article.title);
+			result = await Article.update({ _id: article._id }, { $set: article });
+		} else {
+			// set article projectid and slug
+			article.projectId = articleProject._id;
+			article.slug = _s.slugify(article.title);
+
+			// Initiate new article
+			const newArticle = new Article(article);
+			result = await newArticle.save();
+		}
+
+		// TODO
+		// error handling
+
+		// return updated article
+		return result;
+	}
+
+	/**
+	 * Create a new article
+	 * @param {string} hostname - hostname of the article for the project
+	 * @param {Object} article - article candidate
+	 * @returns {Object} created article
+	 */
+	async create(hostname, article) {
+		// if user is not logged in
+		if (!this.userId) throw new AuthenticationError();
+
+		const articleProject = await Project.findOne({ hostname });
+
+		// Initiate project
+		if (!articleProject) throw new ArgumentError({ data: { field: 'project._id' } });
+
+		// validate permissions
+		const userIsAdmin = this.userIsProjectAdmin(articleProject);
+		if (!userIsAdmin) throw new PermissionError();
+
+		// set article projectid and slug
+		article.projectId = articleProject._id;
+		article.slug = _s.slugify(article.title);
+
+		// Initiate new article
+		const newArticle = new Article(article);
+
+		// save new article and return result
+		return await newArticle.save();
+	}
+
+	/**
+	 * Update a article
+	 * @param {Object} article - article candidate
+	 * @returns {Object} updated article
+	 */
+	async update(article) {
+		// if user is not logged in
+		if (!this.userId) throw new AuthenticationError();
+
+		// get project
+		const project = await Project.findOne({ _id: article.projectId });
+		if (!project) throw new ArgumentError({ data: { field: 'article.projectId' } });
+
+		// validate permissions
+		const userIsAdmin = this.userIsProjectAdmin(project);
+		if (!userIsAdmin) throw new PermissionError();
+
+		// perform action
+		const result = await Article.update({ _id: article._id }, { $set: article });
+
+		// TODO
+		// error handling
+
+		// return updated article
+		return await Article.findById(article._id);
+	}
+
+	/**
+	 * Remove a article
+	 * @param {string} _id - id of article to Remove
+	 * @param {string} hostname - hostname of project to check permissions against
+	 * @returns {boolean} remove result
+	 */
+	async remove(_id, hostname) {
+		// if user is not logged in
+		if (!this.userId) throw new AuthenticationError();
+
+		// get project
+		const project = await Project.findOne({ hostname });
+		if (!project) throw new ArgumentError({ data: { field: 'article.projectId' } });
+
+		// validate permissions
+		const userIsAdmin = this.userIsProjectAdmin(project);
+		if (!userIsAdmin) throw new PermissionError();
+
+		// perform action
+		const result = await Article.remove({ _id });
+
+		// TODO
+		// error handling
+
+		// respond with result
+		return {
+			result,
+		};
+	}
+
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="EmailManager.html">EmailManager</a></li><li><a href="module.html#.exports">exports</a></li></ul><h3>Global</h3><ul><li><a href="global.html#ActivityItemType">ActivityItemType</a></li><li><a href="global.html#ArgumentError">ArgumentError</a></li><li><a href="global.html#Article">Article</a></li><li><a href="global.html#ArticleSchema">ArticleSchema</a></li><li><a href="global.html#AuthenticationError">AuthenticationError</a></li><li><a href="global.html#closeDB">closeDB</a></li><li><a href="global.html#Collection">Collection</a></li><li><a href="global.html#CollectionSchema">CollectionSchema</a></li><li><a href="global.html#Comment">Comment</a></li><li><a href="global.html#CommentSchema">CommentSchema</a></li><li><a href="global.html#count">count</a></li><li><a href="global.html#create">create</a></li><li><a href="global.html#dbSetup">dbSetup</a></li><li><a href="global.html#File">File</a></li><li><a href="global.html#FileSchema">FileSchema</a></li><li><a href="global.html#generateJWT">generateJWT</a></li><li><a href="global.html#getActivityFeed">getActivityFeed</a></li><li><a href="global.html#getArticle">getArticle</a></li><li><a href="global.html#getArticles">getArticles</a></li><li><a href="global.html#getCollection">getCollection</a></li><li><a href="global.html#getCollections">getCollections</a></li><li><a href="global.html#getComment">getComment</a></li><li><a href="global.html#getComments">getComments</a></li><li><a href="global.html#getFile">getFile</a></li><li><a href="global.html#getFiles">getFiles</a></li><li><a href="global.html#getItem">getItem</a></li><li><a href="global.html#getItems">getItems</a></li><li><a href="global.html#getManifest">getManifest</a></li><li><a href="global.html#getManifests">getManifests</a></li><li><a href="global.html#getPage">getPage</a></li><li><a href="global.html#getPages">getPages</a></li><li><a href="global.html#getProfile">getProfile</a></li><li><a href="global.html#getProject">getProject</a></li><li><a href="global.html#getProjects">getProjects</a></li><li><a href="global.html#getText">getText</a></li><li><a href="global.html#getTexts">getTexts</a></li><li><a href="global.html#getURL">getURL</a></li><li><a href="global.html#getUser">getUser</a></li><li><a href="global.html#getUserProjects">getUserProjects</a></li><li><a href="global.html#handleMongooseError">handleMongooseError</a></li><li><a href="global.html#invite">invite</a></li><li><a href="global.html#Item">Item</a></li><li><a href="global.html#ItemSchema">ItemSchema</a></li><li><a href="global.html#jwtAuthenticate">jwtAuthenticate</a></li><li><a href="global.html#loginOAuth1">loginOAuth1</a></li><li><a href="global.html#loginOAuth2">loginOAuth2</a></li><li><a href="global.html#loginPWD">loginPWD</a></li><li><a href="global.html#MongooseDuplicateKeyError">MongooseDuplicateKeyError</a></li><li><a href="global.html#MongooseGeneralError">MongooseGeneralError</a></li><li><a href="global.html#MongooseValidationError">MongooseValidationError</a></li><li><a href="global.html#oauthSetup">oauthSetup</a></li><li><a href="global.html#Page">Page</a></li><li><a href="global.html#PageSchema">PageSchema</a></li><li><a href="global.html#PermissionError">PermissionError</a></li><li><a href="global.html#Project">Project</a></li><li><a href="global.html#ProjectError">ProjectError</a></li><li><a href="global.html#ProjectSchema">ProjectSchema</a></li><li><a href="global.html#redisSetup">redisSetup</a></li><li><a href="global.html#remove">remove</a></li><li><a href="global.html#RootMutations">RootMutations</a></li><li><a href="global.html#RootQuery">RootQuery</a></li><li><a href="global.html#RootSubscription">RootSubscription</a></li><li><a href="global.html#save">save</a></li><li><a href="global.html#storeSetup">storeSetup</a></li><li><a href="global.html#Text">Text</a></li><li><a href="global.html#TextSchema">TextSchema</a></li><li><a href="global.html#update">update</a></li><li><a href="global.html#User">User</a></li><li><a href="global.html#userIsActiveUser">userIsActiveUser</a></li><li><a href="global.html#userIsAdmin">userIsAdmin</a></li><li><a href="global.html#UserSchema">UserSchema</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Jan 17 2018 11:18:40 GMT-0500 (EST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
