@@ -3,7 +3,7 @@ import cors from 'cors';
 
 export default function corsSetup(app) {
 
-	const whitelist = ['http://test.orphe.us', 'http://orphe.us', 'http://test.orpheus.local:3000', 'http://orpheus.local:3000', 'http://localhost:3000'];
+	const whitelist = ['http://test.cltk.org', 'http://cltk.org', 'http://test.cltk.local:3000', 'http://cltk.local:3000', 'http://localhost:3000'];
 
 	if (process.env.NODE_ENV === 'development') {
 		whitelist.push(process.env.CLIENT_SERVER);
@@ -16,9 +16,9 @@ export default function corsSetup(app) {
 			if (
 				origin
 				&& (
-						origin.endsWith('orphe.us')
-					|| origin.endsWith('orpheus.local:3000')
-					|| origin.endsWith('orpheus.local:3001')
+						origin.endsWith('cltk.org')
+					|| origin.endsWith('cltk.local:3000')
+					|| origin.endsWith('cltk.local:3001')
 					|| ~whitelist.indexOf(origin)
 				)
 			) {

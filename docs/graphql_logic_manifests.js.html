@@ -44,175 +44,175 @@ import { AuthenticationError, PermissionError } from '../errors';
  */
 
 export default class ManifestService extends PermissionsService {
-	/**
-	 * Count manifests
-	 * @param {string} itemId
-	 * @param {string} projectId
-	 * @returns {number} count of manifests
-	 */
-	async count({ itemId, projectId }) {
-		const args = {};
+  /**
+   * Count manifests
+   * @param {string} itemId
+   * @param {string} projectId
+   * @returns {number} count of manifests
+   */
+  async count({ itemId, projectId }) {
+    const args = {};
 
-		if (!itemId &amp;&amp; !projectId) {
-			return 0;
-		}
+    if (!itemId &amp;&amp; !projectId) {
+      return 0;
+    }
 
-		if (projectId) {
-			args.projectId = projectId;
-		}
+    if (projectId) {
+      args.projectId = projectId;
+    }
 
-		if (itemId) {
-			args.itemId = itemId;
-		}
+    if (itemId) {
+      args.itemId = itemId;
+    }
 
-		return await Manifest.count(args);
-	}
+    return await Manifest.count(args);
+  }
 
-	/**
-	 * Get a list of manifests
-	 * @param {string} projectId
-	 * @param {string} itemId
-	 * @param {string} textsearch
-	 * @param {number} offset
-	 * @param {number} limit
-	 * @returns {Object[]} array of manifests
-	 */
-	async getManifests({ projectId, itemId, textsearch, offset, limit }) {
-		const args = {};
+  /**
+   * Get a list of manifests
+   * @param {string} projectId
+   * @param {string} itemId
+   * @param {string} textsearch
+   * @param {number} offset
+   * @param {number} limit
+   * @returns {Object[]} array of manifests
+   */
+  async getManifests({ projectId, itemId, textsearch, offset, limit }) {
+    const args = {};
 
-		if (!projectId &amp;&amp; !itemId) {
-			return [];
-		}
+    if (!projectId &amp;&amp; !itemId) {
+      return [];
+    }
 
-		if (projectId) {
-			args.projectId = projectId;
-		}
+    if (projectId) {
+      args.projectId = projectId;
+    }
 
-		if (itemId) {
-			args.itemId = itemId;
-		}
+    if (itemId) {
+      args.itemId = itemId;
+    }
 
-		if (textsearch) {
-			args.title = /.*${textsearch}.*/;
-		}
+    if (textsearch) {
+      args.title = /.*${textsearch}.*/;
+    }
 
-		return await Manifest.find(args)
-			.sort({ createdAt: 1 })
-			.skip(offset)
-			.limit(limit);
-	}
+    return await Manifest.find(args)
+      .sort({ createdAt: 1 })
+      .skip(offset)
+      .limit(limit);
+  }
 
-	/**
-	 * Get manifest
-	 * @param {string} itemId - id of item of manifest
-	 * @param {number} _id - id of manifest
-	 * @param {string} slug - slug of manifest
-	 * @returns {Object[]} array of manifests
-	 */
-	async getManifest({ itemId, _id, slug }) {
-		const where = {};
+  /**
+   * Get manifest
+   * @param {string} itemId - id of item of manifest
+   * @param {number} _id - id of manifest
+   * @param {string} slug - slug of manifest
+   * @returns {Object[]} array of manifests
+   */
+  async getManifest({ itemId, _id, slug }) {
+    const where = {};
 
-		if (!itemId &amp;&amp; !_id &amp;&amp; !slug) {
-			return null;
-		}
+    if (!itemId &amp;&amp; !_id &amp;&amp; !slug) {
+      return null;
+    }
 
-		if (itemId) {
-			where.itemId = itemId;
-		}
+    if (itemId) {
+      where.itemId = itemId;
+    }
 
-		if (_id) {
-			where._id = _id;
-		}
+    if (_id) {
+      where._id = _id;
+    }
 
-		if (slug) {
-			where.slug = slug;
-		}
+    if (slug) {
+      where.slug = slug;
+    }
 
-		return await Manifest.findOne(where);
-	}
+    return await Manifest.findOne(where);
+  }
 
-	/**
-	 * Create a new manifest
-	 * @param {Object} manifest - manifest candidate
-	 * @param {string} hostname - hostname of manifest project
-	 * @returns {Object} created manifest
-	 */
-	async create(hostname, manifest) {
-		// if user is not logged in
-		if (!this.userId) throw new AuthenticationError();
+  /**
+   * Create a new manifest
+   * @param {Object} manifest - manifest candidate
+   * @param {string} hostname - hostname of manifest project
+   * @returns {Object} created manifest
+   */
+  async create(hostname, manifest) {
+    // if user is not logged in
+    if (!this.userId) throw new AuthenticationError();
 
-		// find project
-		const project = await Project.findOne({ hostname });
-		if (!project) throw new ArgumentError({ data: { field: 'hostname' } });
+    // find project
+    const project = await Project.findOne({ hostname });
+    if (!project) throw new ArgumentError({ data: { field: 'hostname' } });
 
-		// validate permissions
-		const userIsAdmin = this.userIsProjectAdmin(project);
-		if (!userIsAdmin) throw new PermissionError();
+    // validate permissions
+    const userIsAdmin = this.userIsProjectAdmin(project);
+    if (!userIsAdmin) throw new PermissionError();
 
-		// Initiate new manifest
-		manifest.projectId = project._id;
-		manifest.slug = _s.slugify(manifest.title);
-		const newManifest = new Manifest(manifest);
+    // Initiate new manifest
+    manifest.projectId = project._id;
+    manifest.slug = _s.slugify(manifest.title);
+    const newManifest = new Manifest(manifest);
 
-		// save new manifest
-		return await newManifest.save();
-	}
+    // save new manifest
+    return await newManifest.save();
+  }
 
-	/**
-	 * Update a manifest
-	 * @param {Object} manifest - manifest candidate
-	 * @returns {Object} updated manifest
-	 */
-	async update(manifest) {
-		// if user is not logged in
-		// if (!this.userId) throw new AuthenticationError();
+  /**
+   * Update a manifest
+   * @param {Object} manifest - manifest candidate
+   * @returns {Object} updated manifest
+   */
+  async update(manifest) {
+    // if user is not logged in
+    // if (!this.userId) throw new AuthenticationError();
 
-		// find project
-		// const project = await Project.findOne(manifest.projectId);
-		// if (!project) throw new ArgumentError({ data: { field: 'manifest.projectId' } });
+    // find project
+    // const project = await Project.findOne(manifest.projectId);
+    // if (!project) throw new ArgumentError({ data: { field: 'manifest.projectId' } });
 
-		// validate permissions
-		// const userIsAdmin = this.userIsProjectAdmin(project);
-		// if (!userIsAdmin) throw new PermissionError();
+    // validate permissions
+    // const userIsAdmin = this.userIsProjectAdmin(project);
+    // if (!userIsAdmin) throw new PermissionError();
 
-		// perform action
-		const result = await Manifest.update({ _id: manifest._id }, { $set: manifest });
+    // perform action
+    const result = await Manifest.update({ _id: manifest._id }, { $set: manifest });
 
-		// TODO
-		// error handling
+    // TODO
+    // error handling
 
-		// return updated manifest
-		return await Manifest.findById(manifest._id);
-	}
+    // return updated manifest
+    return await Manifest.findById(manifest._id);
+  }
 
-	/**
-	 * Remove a manifest
-	 * @param {string} _id - id of manifest to Remove
-	 * @returns {boolean} remove result
-	 */
-	async remove(_id) {
-		// if user is not logged in
-		if (!this.userId) throw new AuthenticationError();
+  /**
+   * Remove a manifest
+   * @param {string} _id - id of manifest to Remove
+   * @returns {boolean} remove result
+   */
+  async remove(_id) {
+    // if user is not logged in
+    if (!this.userId) throw new AuthenticationError();
 
-		// find project
-		const project = await Project.findOne(hostname);
-		if (!project) throw new ArgumentError({ data: { field: 'hostname' } });
+    // find project
+    const project = await Project.findOne(hostname);
+    if (!project) throw new ArgumentError({ data: { field: 'hostname' } });
 
-		// validate permissions
-		const userIsAdmin = this.userIsProjectAdmin(project);
-		if (!userIsAdmin) throw new PermissionError();
+    // validate permissions
+    const userIsAdmin = this.userIsProjectAdmin(project);
+    if (!userIsAdmin) throw new PermissionError();
 
-		// perform action
-		const result = await Manifest.remove({ _id });
+    // perform action
+    const result = await Manifest.remove({ _id });
 
-		// TODO
-		// error handling
+    // TODO
+    // error handling
 
-		// respond with result
-		return {
-			result,
-		};
-	}
+    // respond with result
+    return {
+      result,
+    };
+  }
 }
 </code></pre>
         </article>
@@ -224,13 +224,13 @@ export default class ManifestService extends PermissionsService {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="EmailManager.html">EmailManager</a></li><li><a href="module.html#.exports">exports</a></li></ul><h3>Global</h3><ul><li><a href="global.html#ActivityItemType">ActivityItemType</a></li><li><a href="global.html#ArgumentError">ArgumentError</a></li><li><a href="global.html#Article">Article</a></li><li><a href="global.html#ArticleSchema">ArticleSchema</a></li><li><a href="global.html#AuthenticationError">AuthenticationError</a></li><li><a href="global.html#closeDB">closeDB</a></li><li><a href="global.html#Collection">Collection</a></li><li><a href="global.html#CollectionSchema">CollectionSchema</a></li><li><a href="global.html#Comment">Comment</a></li><li><a href="global.html#CommentSchema">CommentSchema</a></li><li><a href="global.html#count">count</a></li><li><a href="global.html#create">create</a></li><li><a href="global.html#dbSetup">dbSetup</a></li><li><a href="global.html#File">File</a></li><li><a href="global.html#FileSchema">FileSchema</a></li><li><a href="global.html#generateJWT">generateJWT</a></li><li><a href="global.html#getActivityFeed">getActivityFeed</a></li><li><a href="global.html#getArticle">getArticle</a></li><li><a href="global.html#getArticles">getArticles</a></li><li><a href="global.html#getCollection">getCollection</a></li><li><a href="global.html#getCollections">getCollections</a></li><li><a href="global.html#getComment">getComment</a></li><li><a href="global.html#getComments">getComments</a></li><li><a href="global.html#getFile">getFile</a></li><li><a href="global.html#getFiles">getFiles</a></li><li><a href="global.html#getItem">getItem</a></li><li><a href="global.html#getItems">getItems</a></li><li><a href="global.html#getManifest">getManifest</a></li><li><a href="global.html#getManifests">getManifests</a></li><li><a href="global.html#getPage">getPage</a></li><li><a href="global.html#getPages">getPages</a></li><li><a href="global.html#getProfile">getProfile</a></li><li><a href="global.html#getProject">getProject</a></li><li><a href="global.html#getProjects">getProjects</a></li><li><a href="global.html#getText">getText</a></li><li><a href="global.html#getTexts">getTexts</a></li><li><a href="global.html#getURL">getURL</a></li><li><a href="global.html#getUser">getUser</a></li><li><a href="global.html#getUserProjects">getUserProjects</a></li><li><a href="global.html#handleMongooseError">handleMongooseError</a></li><li><a href="global.html#invite">invite</a></li><li><a href="global.html#Item">Item</a></li><li><a href="global.html#ItemSchema">ItemSchema</a></li><li><a href="global.html#jwtAuthenticate">jwtAuthenticate</a></li><li><a href="global.html#loginOAuth1">loginOAuth1</a></li><li><a href="global.html#loginOAuth2">loginOAuth2</a></li><li><a href="global.html#loginPWD">loginPWD</a></li><li><a href="global.html#MongooseDuplicateKeyError">MongooseDuplicateKeyError</a></li><li><a href="global.html#MongooseGeneralError">MongooseGeneralError</a></li><li><a href="global.html#MongooseValidationError">MongooseValidationError</a></li><li><a href="global.html#oauthSetup">oauthSetup</a></li><li><a href="global.html#Page">Page</a></li><li><a href="global.html#PageSchema">PageSchema</a></li><li><a href="global.html#PermissionError">PermissionError</a></li><li><a href="global.html#Project">Project</a></li><li><a href="global.html#ProjectError">ProjectError</a></li><li><a href="global.html#ProjectSchema">ProjectSchema</a></li><li><a href="global.html#redisSetup">redisSetup</a></li><li><a href="global.html#remove">remove</a></li><li><a href="global.html#RootMutations">RootMutations</a></li><li><a href="global.html#RootQuery">RootQuery</a></li><li><a href="global.html#RootSubscription">RootSubscription</a></li><li><a href="global.html#save">save</a></li><li><a href="global.html#storeSetup">storeSetup</a></li><li><a href="global.html#Text">Text</a></li><li><a href="global.html#TextSchema">TextSchema</a></li><li><a href="global.html#update">update</a></li><li><a href="global.html#User">User</a></li><li><a href="global.html#userIsActiveUser">userIsActiveUser</a></li><li><a href="global.html#userIsAdmin">userIsAdmin</a></li><li><a href="global.html#UserSchema">UserSchema</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="EmailManager.html">EmailManager</a></li><li><a href="module.html#.exports">exports</a></li></ul><h3>Global</h3><ul><li><a href="global.html#ArgumentError">ArgumentError</a></li><li><a href="global.html#AuthenticationError">AuthenticationError</a></li><li><a href="global.html#closeDB">closeDB</a></li><li><a href="global.html#Comment">Comment</a></li><li><a href="global.html#CommentSchema">CommentSchema</a></li><li><a href="global.html#count">count</a></li><li><a href="global.html#create">create</a></li><li><a href="global.html#createRemoteSchema">createRemoteSchema</a></li><li><a href="global.html#dbSetup">dbSetup</a></li><li><a href="global.html#File">File</a></li><li><a href="global.html#FileSchema">FileSchema</a></li><li><a href="global.html#generateJWT">generateJWT</a></li><li><a href="global.html#getActivityFeed">getActivityFeed</a></li><li><a href="global.html#getCollections">getCollections</a></li><li><a href="global.html#getComment">getComment</a></li><li><a href="global.html#getComments">getComments</a></li><li><a href="global.html#getFile">getFile</a></li><li><a href="global.html#getFiles">getFiles</a></li><li><a href="global.html#getItem">getItem</a></li><li><a href="global.html#getItems">getItems</a></li><li><a href="global.html#getManifest">getManifest</a></li><li><a href="global.html#getManifests">getManifests</a></li><li><a href="global.html#getPage">getPage</a></li><li><a href="global.html#getPages">getPages</a></li><li><a href="global.html#getProfile">getProfile</a></li><li><a href="global.html#getProject">getProject</a></li><li><a href="global.html#getProjects">getProjects</a></li><li><a href="global.html#getURL">getURL</a></li><li><a href="global.html#getUser">getUser</a></li><li><a href="global.html#getUserProjects">getUserProjects</a></li><li><a href="global.html#handleMongooseError">handleMongooseError</a></li><li><a href="global.html#invite">invite</a></li><li><a href="global.html#Item">Item</a></li><li><a href="global.html#ItemSchema">ItemSchema</a></li><li><a href="global.html#jwtAuthenticate">jwtAuthenticate</a></li><li><a href="global.html#loginOAuth1">loginOAuth1</a></li><li><a href="global.html#loginOAuth2">loginOAuth2</a></li><li><a href="global.html#loginPWD">loginPWD</a></li><li><a href="global.html#MongooseDuplicateKeyError">MongooseDuplicateKeyError</a></li><li><a href="global.html#MongooseGeneralError">MongooseGeneralError</a></li><li><a href="global.html#MongooseValidationError">MongooseValidationError</a></li><li><a href="global.html#oauthSetup">oauthSetup</a></li><li><a href="global.html#Page">Page</a></li><li><a href="global.html#PageSchema">PageSchema</a></li><li><a href="global.html#PermissionError">PermissionError</a></li><li><a href="global.html#Project">Project</a></li><li><a href="global.html#ProjectError">ProjectError</a></li><li><a href="global.html#ProjectSchema">ProjectSchema</a></li><li><a href="global.html#redisSetup">redisSetup</a></li><li><a href="global.html#remove">remove</a></li><li><a href="global.html#RootMutations">RootMutations</a></li><li><a href="global.html#RootQuery">RootQuery</a></li><li><a href="global.html#RootSchema">RootSchema</a></li><li><a href="global.html#RootSubscription">RootSubscription</a></li><li><a href="global.html#setupGraphql">setupGraphql</a></li><li><a href="global.html#storeSetup">storeSetup</a></li><li><a href="global.html#update">update</a></li><li><a href="global.html#User">User</a></li><li><a href="global.html#userIsActiveUser">userIsActiveUser</a></li><li><a href="global.html#userIsAdmin">userIsAdmin</a></li><li><a href="global.html#UserSchema">UserSchema</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Jan 17 2018 11:18:40 GMT-0500 (EST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sun Jan 21 2018 00:40:28 GMT-0500 (EST)
 </footer>
 
 <script> prettyPrint(); </script>

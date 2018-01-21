@@ -8,22 +8,15 @@ import createType from 'mongoose-schema-to-graphql';
 import Project from '../../models/project';
 
 // logic
-import CollectionService from '../logic/collections';
-import ArticleService from '../logic/articles';
 import FileService from '../logic/files';
 import ItemService from '../logic/items';
 import ProjectService from '../logic/projects';
-import TextService from '../logic/texts';
 import UserService from '../logic/users';
 import PageService from '../logic/pages';
 
 // types
-import CollectionType from './collection';
-import ArticleType from './article';
 import FileType from './file';
 import ItemType from './item';
-import ActivityItemType from './activityItem';
-import TextType from './text';
 import UserType from './user';
 import PageType from './page';
 
@@ -34,98 +27,6 @@ const config = {
 	class: 'GraphQLObjectType',
 	schema: Project.schema,
 	extend: {
-		collection: {
-			type: CollectionType,
-			description: 'Get collection document',
-			args: {
-				_id: {
-					type: GraphQLString,
-				},
-				slug: {
-					type: GraphQLString,
-				},
-				hostname: {
-					type: GraphQLString,
-				},
-			},
-			resolve(parent, { _id, slug, hostname }, { token }) {
-				const collectionService = new CollectionService(token);
-				return collectionService.getCollection({ projectId: parent._id, _id, slug, hostname });
-			}
-		},
-		collections: {
-			type: new GraphQLList(CollectionType),
-			description: 'Get list of collections',
-			args: {
-				textsearch: {
-					type: GraphQLString,
-				},
-				limit: {
-					type: GraphQLInt,
-				},
-				offset: {
-					type: GraphQLInt,
-				},
-			},
-			resolve(parent, { textsearch, limit, offset }, { token }) {
-				const collectionService = new CollectionService(token);
-				return collectionService.getCollections({ projectId: parent._id, textsearch, limit, offset });
-			}
-		},
-		collectionsCount: {
-			type: GraphQLInt,
-			description: 'Get count of collection for project',
-			resolve(parent, _, { token }) {
-				const collectionService = new CollectionService(token);
-				return collectionService.count({ projectId: parent._id });
-			}
-		},
-		article: {
-			type: ArticleType,
-			description: 'Get article document',
-			args: {
-				_id: {
-					type: GraphQLString,
-				},
-				slug: {
-					type: GraphQLString,
-				},
-				hostname: {
-					type: GraphQLString,
-				},
-			},
-			resolve(parent, { _id, slug, hostname }, { token }) {
-				const articleService = new ArticleService(token);
-				return articleService.getArticle({ projectId: parent._id, _id, slug, hostname });
-			}
-		},
-		articles: {
-			type: new GraphQLList(ArticleType),
-			description: 'Get list of articles',
-			args: {
-				textsearch: {
-					type: GraphQLString,
-				},
-				limit: {
-					type: GraphQLInt,
-				},
-				offset: {
-					type: GraphQLInt,
-				},
-			},
-			resolve(parent, { textsearch, limit, offset }, { token }) {
-				const articleService = new ArticleService(token);
-				return articleService.getArticles({ projectId: parent._id, textsearch, limit, offset });
-			}
-		},
-		articlesCount: {
-			type: GraphQLInt,
-			description: 'Get count of articles in project',
-			resolve(parent, _, { token }) {
-				const articleService = new ArticleService(token);
-				return articleService.count({ projectId: parent._id });
-			}
-		},
 		page: {
 			type: PageType,
 			description: 'Get page document',
@@ -170,18 +71,6 @@ const config = {
 			resolve(parent, _, { token }) {
 				const pageService = new PageService(token);
 				return pageService.count({ projectId: parent._id });
-			}
-		},
-		activity: {
-			type: new GraphQLList(ActivityItemType),
-			description: 'Get project activity',
-			resolve(parent, { limit, offset }, { token }) {
-				const projectService = new ProjectService(token);
-				return projectService.getActivityFeed({
-					projectId: parent._id,
-					limit,
-					offset,
-				});
 			}
 		},
 		users: {
@@ -281,35 +170,6 @@ const config = {
 			resolve(parent, args, { token }) {
 				const fileService = new FileService(token);
 				return fileService.count({ projectId: parent._id });
-			}
-		},
-		texts: {
-			type: new GraphQLList(TextType),
-			description: 'Get project texts',
-			resolve(parent, args, { token }) {
-				const textService = new TextService(token);
-				return textService.getTexts({ projectId: parent._id });
-			}
-		},
-		text: {
-			type: TextType,
-			description: 'Get a project text',
-			args: {
-				_id: {
-					type: GraphQLString,
-				},
-			},
-			resolve(parent, { _id }, { token }) {
-				const textService = new TextService(token);
-				return textService.getText({ projectId: parent._id, _id });
-			}
-		},
-		textsCount: {
-			type: GraphQLInt,
-			description: 'Count all project texts',
-			resolve(parent, args, { token }) {
-				const textService = new TextService(token);
-				return textService.count({ projectId: parent._id });
 			}
 		},
 	},

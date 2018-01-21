@@ -1,7 +1,7 @@
 {
-  "name": "orpheus",
+  "name": "cltk",
   "version": "0.0.1",
-  "description": "React application for Orphe.us digital collections",
+  "description": "React application for cltk.org digital collections",
   "main": "server.js",
   "dependencies": {
     "apollo-errors": "^1.4.0",
@@ -119,7 +119,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@gitlab.archimedes.digital:archimedes/orpheus-api.git"
+    "url": "git@gitlab.archimedes.digital:archimedes/cltk-api.git"
   },
   "author": "Archimedes Digital",
   "license": "MIT"

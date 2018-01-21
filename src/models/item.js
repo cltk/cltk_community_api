@@ -6,10 +6,6 @@ import timestamp from 'mongoose-timestamp';
 import URLSlugs from 'mongoose-url-slugs';
 import mongoosePaginate from 'mongoose-paginate';
 
-// models
-import Collection from './collection';
-
-
 const Schema = mongoose.Schema;
 
 
@@ -54,11 +50,6 @@ const ItemSchema = new Schema({
 	projectId: {
 		type: String,
 		ref: 'Project',
-		index: true
-	},
-	collectionId: {
-		type: [String],
-		ref: 'Collection',
 		index: true
 	},
 	description: {

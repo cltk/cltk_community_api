@@ -1,3 +1,3 @@
-# Orphe.us GraphQL Server
+# CLTK Community API
 
-The server portion of the Orphe.us applications.
+API application providing data for the CLTK community built with GraphQL and Express. 

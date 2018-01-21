@@ -2,7 +2,7 @@
   "kind": "Service",
   "apiVersion": "v1",
   "metadata": {
-    "name": "orpheus-app-serv"
+    "name": "cltk-app-serv"
   },
   "spec": {
     "ports": [
@@ -13,7 +13,7 @@
       }
     ],
     "selector": {
-      "name": "orpheus-app-pod"
+      "name": "cltk-app-pod"
     },
     "sessionAffinity": "ClientIP",
     "type": "LoadBalancer"

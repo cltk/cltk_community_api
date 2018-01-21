@@ -49,7 +49,7 @@ class EmailManager {
 
 		const email = {
 			from: this.from,
-			to: 'test@orphe.us',
+			to: 'test@cltk.org',
 			subject: 'Test',
 			html: '<b>Hello</b>',
 			text: 'results.text',

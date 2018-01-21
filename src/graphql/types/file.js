@@ -5,10 +5,7 @@ import createType from 'mongoose-schema-to-graphql';
 import File from '../../models/file';
 
 // logic
-import ItemService from '../logic/items';
-
-// types
-import ItemType from './item';
+import FileService from '../logic/files';
 
 
 const config = {

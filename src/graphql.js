@@ -29,7 +29,7 @@ import User from './models/user';
  * via example Schema stitching from the repo mentioned here:
  * https://dev-blog.apollodata.com/graphql-schema-stitching-8af23354ac37
  */
-const createRemoteSchema = async (uri: string) => {
+const createRemoteSchema = async (uri) => {
 	const fetcher = createApolloFetch({uri});
 	return makeRemoteExecutableSchema({
 		schema: await introspectSchema(fetcher),

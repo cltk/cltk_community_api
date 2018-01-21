@@ -45,149 +45,149 @@ import { AuthenticationError, PermissionError } from '../errors';
 
 export default class UserService extends PermissionsService {
 
-	/**
-	 * Get user activity feed
-	 * @param {number} limit - mongoose orm limit
-	 * @param {number} offset - mongoose orm offset
-	 * @returns {Object[]} activity feed items
-	 */
-	async getActivityFeed({ limit, offset }) {
+  /**
+   * Get user activity feed
+   * @param {number} limit - mongoose orm limit
+   * @param {number} offset - mongoose orm offset
+   * @returns {Object[]} activity feed items
+   */
+  async getActivityFeed({ limit, offset }) {
 
-		// TODO:
-		// get activity feed from collections, items, articles, texts, and comments
+    // TODO:
+    // get activity feed from collections, items, articles, texts, and comments
 
-		return [];
-	}
+    return [];
+  }
 
-	/**
-	 * Get user profile
-	 * @returns {Object} currently logged in user profile
-	 */
-	async getProfile() {
-		return await User.findOne({ _id: this.userId });
-	}
+  /**
+   * Get user profile
+   * @returns {Object} currently logged in user profile
+   */
+  async getProfile() {
+    return await User.findOne({ _id: this.userId });
+  }
 
-	/**
-	 * Get project
-	 * @param {number} _id - id of project
-	 * @returns {Object} user record
-	 */
-	async getUser({ _id }) {
-		const where = {};
+  /**
+   * Get project
+   * @param {number} _id - id of project
+   * @returns {Object} user record
+   */
+  async getUser({ _id }) {
+    const where = {};
 
-		if (!_id) {
-			return null;
-		}
+    if (!_id) {
+      return null;
+    }
 
-		if (_id) {
-			where._id = _id;
-		}
+    if (_id) {
+      where._id = _id;
+    }
 
-		return await User.findOne(where);
-	}
+    return await User.findOne(where);
+  }
 
-	/**
-	 * Update user profile
-	 * @param {Object} user - user record
-	 * @returns {Object} updated user result
-	 */
-	async update(user) {
-		// if user is not logged in
-		if (!this.userId) throw new AuthenticationError();
+  /**
+   * Update user profile
+   * @param {Object} user - user record
+   * @returns {Object} updated user result
+   */
+  async update(user) {
+    // if user is not logged in
+    if (!this.userId) throw new AuthenticationError();
 
-		// perform action
-		const result = await User.update({ _id: this.userId }, { $set: user });
+    // perform action
+    const result = await User.update({ _id: this.userId }, { $set: user });
 
-		// TODO
-		// error handling
+    // TODO
+    // error handling
 
-		// return updated project
-		return await User.findOne({ _id: this.userId });
-	}
+    // return updated project
+    return await User.findOne({ _id: this.userId });
+  }
 
-	/**
-	 * Check if user is admin for project
-	 * @param {Object} project - project to compare against
-	 * @returns {boolean} if the user is an admin on the current project
-	 */
-	async userIsAdmin({ project }) {
-		// if user is not logged in or there is no project
-		if (!this.userId || !project) {
-			return false;
-		}
+  /**
+   * Check if user is admin for project
+   * @param {Object} project - project to compare against
+   * @returns {boolean} if the user is an admin on the current project
+   */
+  async userIsAdmin({ project }) {
+    // if user is not logged in or there is no project
+    if (!this.userId || !project) {
+      return false;
+    }
 
-		// return updated project
-		return this.userIsProjectAdmin(project);
-	}
+    // return updated project
+    return this.userIsProjectAdmin(project);
+  }
 
-	/**
-	 * Check if provided user id is the id of the signed in user
-	 * @param {string} _id - user id to check
-	 * @returns {boolean} if the user is an admin on the current project
-	 */
-	async userIsActiveUser(_id) {
-		// if user is not logged in
-		if (!this.userId) {
-			return false;
-		}
+  /**
+   * Check if provided user id is the id of the signed in user
+   * @param {string} _id - user id to check
+   * @returns {boolean} if the user is an admin on the current project
+   */
+  async userIsActiveUser(_id) {
+    // if user is not logged in
+    if (!this.userId) {
+      return false;
+    }
 
-		// return if the user who made this request is the parent user object requested
-		return (_id === this.userId);
-	}
+    // return if the user who made this request is the parent user object requested
+    return (_id === this.userId);
+  }
 
-	/**
-	 * Invite a user to join project via email (with captcha)
-	 * @param {string} userEmail - user Email to invite to join
-	 * @param {string} role - invited user role
-	 * @param {string} recaptchaVerification - recaptcha verification to prevent bots
-	 * @param {string} hostname - project hostname to invite user to
-	 * @returns {boolean} if the invitiation has been sent successfully
-	 */
-	async invite({ userEmail, role, recaptchaVerification, hostname }) {
-		// if user is not logged in
-		if (!this.userId) {
-			return false;
-		}
+  /**
+   * Invite a user to join project via email (with captcha)
+   * @param {string} userEmail - user Email to invite to join
+   * @param {string} role - invited user role
+   * @param {string} recaptchaVerification - recaptcha verification to prevent bots
+   * @param {string} hostname - project hostname to invite user to
+   * @returns {boolean} if the invitiation has been sent successfully
+   */
+  async invite({ userEmail, role, recaptchaVerification, hostname }) {
+    // if user is not logged in
+    if (!this.userId) {
+      return false;
+    }
 
-		// TODO: if recaptchaVerification fails
-		if (!recaptchaVerification) {
-			return false;
-		}
+    // TODO: if recaptchaVerification fails
+    if (!recaptchaVerification) {
+      return false;
+    }
 
-		// find project
-		const project = await Project.findOne({ hostname });
-		if (!project) throw new ArgumentError({ data: { field: 'hostname' } });
+    // find project
+    const project = await Project.findOne({ hostname });
+    if (!project) throw new ArgumentError({ data: { field: 'hostname' } });
 
-		// validate permissions
-		const userIsAdmin = this.userIsProjectAdmin(project);
-		if (!userIsAdmin) throw new PermissionError();
+    // validate permissions
+    const userIsAdmin = this.userIsProjectAdmin(project);
+    if (!userIsAdmin) throw new PermissionError();
 
-		let user = await User.findOne({ email: userEmail });
+    let user = await User.findOne({ email: userEmail });
 
-		if (!user) {
-			user = new User({
-				email: userEmail,
-				username: userEmail,
-				name: userEmail,
-			});
-			await user.save();
-			user = await User.findOne({ email: userEmail });
-		}
+    if (!user) {
+      user = new User({
+        email: userEmail,
+        username: userEmail,
+        name: userEmail,
+      });
+      await user.save();
+      user = await User.findOne({ email: userEmail });
+    }
 
-		const result = await Project.update({
-			_id: project._id,
-		}, {
-			$push: {
-				users: {
-					userId: user._id,
-					role: 'admin',
-					status: 'pending',
-				}
-			}
-		});
+    const result = await Project.update({
+      _id: project._id,
+    }, {
+      $push: {
+        users: {
+          userId: user._id,
+          role: 'admin',
+          status: 'pending',
+        }
+      }
+    });
 
-		return result;
-	}
+    return result;
+  }
 }
 </code></pre>
         </article>
@@ -199,13 +199,13 @@ export default class UserService extends PermissionsService {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="EmailManager.html">EmailManager</a></li><li><a href="module.html#.exports">exports</a></li></ul><h3>Global</h3><ul><li><a href="global.html#ActivityItemType">ActivityItemType</a></li><li><a href="global.html#ArgumentError">ArgumentError</a></li><li><a href="global.html#Article">Article</a></li><li><a href="global.html#ArticleSchema">ArticleSchema</a></li><li><a href="global.html#AuthenticationError">AuthenticationError</a></li><li><a href="global.html#closeDB">closeDB</a></li><li><a href="global.html#Collection">Collection</a></li><li><a href="global.html#CollectionSchema">CollectionSchema</a></li><li><a href="global.html#Comment">Comment</a></li><li><a href="global.html#CommentSchema">CommentSchema</a></li><li><a href="global.html#count">count</a></li><li><a href="global.html#create">create</a></li><li><a href="global.html#dbSetup">dbSetup</a></li><li><a href="global.html#File">File</a></li><li><a href="global.html#FileSchema">FileSchema</a></li><li><a href="global.html#generateJWT">generateJWT</a></li><li><a href="global.html#getActivityFeed">getActivityFeed</a></li><li><a href="global.html#getArticle">getArticle</a></li><li><a href="global.html#getArticles">getArticles</a></li><li><a href="global.html#getCollection">getCollection</a></li><li><a href="global.html#getCollections">getCollections</a></li><li><a href="global.html#getComment">getComment</a></li><li><a href="global.html#getComments">getComments</a></li><li><a href="global.html#getFile">getFile</a></li><li><a href="global.html#getFiles">getFiles</a></li><li><a href="global.html#getItem">getItem</a></li><li><a href="global.html#getItems">getItems</a></li><li><a href="global.html#getManifest">getManifest</a></li><li><a href="global.html#getManifests">getManifests</a></li><li><a href="global.html#getPage">getPage</a></li><li><a href="global.html#getPages">getPages</a></li><li><a href="global.html#getProfile">getProfile</a></li><li><a href="global.html#getProject">getProject</a></li><li><a href="global.html#getProjects">getProjects</a></li><li><a href="global.html#getText">getText</a></li><li><a href="global.html#getTexts">getTexts</a></li><li><a href="global.html#getURL">getURL</a></li><li><a href="global.html#getUser">getUser</a></li><li><a href="global.html#getUserProjects">getUserProjects</a></li><li><a href="global.html#handleMongooseError">handleMongooseError</a></li><li><a href="global.html#invite">invite</a></li><li><a href="global.html#Item">Item</a></li><li><a href="global.html#ItemSchema">ItemSchema</a></li><li><a href="global.html#jwtAuthenticate">jwtAuthenticate</a></li><li><a href="global.html#loginOAuth1">loginOAuth1</a></li><li><a href="global.html#loginOAuth2">loginOAuth2</a></li><li><a href="global.html#loginPWD">loginPWD</a></li><li><a href="global.html#MongooseDuplicateKeyError">MongooseDuplicateKeyError</a></li><li><a href="global.html#MongooseGeneralError">MongooseGeneralError</a></li><li><a href="global.html#MongooseValidationError">MongooseValidationError</a></li><li><a href="global.html#oauthSetup">oauthSetup</a></li><li><a href="global.html#Page">Page</a></li><li><a href="global.html#PageSchema">PageSchema</a></li><li><a href="global.html#PermissionError">PermissionError</a></li><li><a href="global.html#Project">Project</a></li><li><a href="global.html#ProjectError">ProjectError</a></li><li><a href="global.html#ProjectSchema">ProjectSchema</a></li><li><a href="global.html#redisSetup">redisSetup</a></li><li><a href="global.html#remove">remove</a></li><li><a href="global.html#RootMutations">RootMutations</a></li><li><a href="global.html#RootQuery">RootQuery</a></li><li><a href="global.html#RootSubscription">RootSubscription</a></li><li><a href="global.html#save">save</a></li><li><a href="global.html#storeSetup">storeSetup</a></li><li><a href="global.html#Text">Text</a></li><li><a href="global.html#TextSchema">TextSchema</a></li><li><a href="global.html#update">update</a></li><li><a href="global.html#User">User</a></li><li><a href="global.html#userIsActiveUser">userIsActiveUser</a></li><li><a href="global.html#userIsAdmin">userIsAdmin</a></li><li><a href="global.html#UserSchema">UserSchema</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="EmailManager.html">EmailManager</a></li><li><a href="module.html#.exports">exports</a></li></ul><h3>Global</h3><ul><li><a href="global.html#ArgumentError">ArgumentError</a></li><li><a href="global.html#AuthenticationError">AuthenticationError</a></li><li><a href="global.html#closeDB">closeDB</a></li><li><a href="global.html#Comment">Comment</a></li><li><a href="global.html#CommentSchema">CommentSchema</a></li><li><a href="global.html#count">count</a></li><li><a href="global.html#create">create</a></li><li><a href="global.html#createRemoteSchema">createRemoteSchema</a></li><li><a href="global.html#dbSetup">dbSetup</a></li><li><a href="global.html#File">File</a></li><li><a href="global.html#FileSchema">FileSchema</a></li><li><a href="global.html#generateJWT">generateJWT</a></li><li><a href="global.html#getActivityFeed">getActivityFeed</a></li><li><a href="global.html#getCollections">getCollections</a></li><li><a href="global.html#getComment">getComment</a></li><li><a href="global.html#getComments">getComments</a></li><li><a href="global.html#getFile">getFile</a></li><li><a href="global.html#getFiles">getFiles</a></li><li><a href="global.html#getItem">getItem</a></li><li><a href="global.html#getItems">getItems</a></li><li><a href="global.html#getManifest">getManifest</a></li><li><a href="global.html#getManifests">getManifests</a></li><li><a href="global.html#getPage">getPage</a></li><li><a href="global.html#getPages">getPages</a></li><li><a href="global.html#getProfile">getProfile</a></li><li><a href="global.html#getProject">getProject</a></li><li><a href="global.html#getProjects">getProjects</a></li><li><a href="global.html#getURL">getURL</a></li><li><a href="global.html#getUser">getUser</a></li><li><a href="global.html#getUserProjects">getUserProjects</a></li><li><a href="global.html#handleMongooseError">handleMongooseError</a></li><li><a href="global.html#invite">invite</a></li><li><a href="global.html#Item">Item</a></li><li><a href="global.html#ItemSchema">ItemSchema</a></li><li><a href="global.html#jwtAuthenticate">jwtAuthenticate</a></li><li><a href="global.html#loginOAuth1">loginOAuth1</a></li><li><a href="global.html#loginOAuth2">loginOAuth2</a></li><li><a href="global.html#loginPWD">loginPWD</a></li><li><a href="global.html#MongooseDuplicateKeyError">MongooseDuplicateKeyError</a></li><li><a href="global.html#MongooseGeneralError">MongooseGeneralError</a></li><li><a href="global.html#MongooseValidationError">MongooseValidationError</a></li><li><a href="global.html#oauthSetup">oauthSetup</a></li><li><a href="global.html#Page">Page</a></li><li><a href="global.html#PageSchema">PageSchema</a></li><li><a href="global.html#PermissionError">PermissionError</a></li><li><a href="global.html#Project">Project</a></li><li><a href="global.html#ProjectError">ProjectError</a></li><li><a href="global.html#ProjectSchema">ProjectSchema</a></li><li><a href="global.html#redisSetup">redisSetup</a></li><li><a href="global.html#remove">remove</a></li><li><a href="global.html#RootMutations">RootMutations</a></li><li><a href="global.html#RootQuery">RootQuery</a></li><li><a href="global.html#RootSchema">RootSchema</a></li><li><a href="global.html#RootSubscription">RootSubscription</a></li><li><a href="global.html#setupGraphql">setupGraphql</a></li><li><a href="global.html#storeSetup">storeSetup</a></li><li><a href="global.html#update">update</a></li><li><a href="global.html#User">User</a></li><li><a href="global.html#userIsActiveUser">userIsActiveUser</a></li><li><a href="global.html#userIsAdmin">userIsAdmin</a></li><li><a href="global.html#UserSchema">UserSchema</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Jan 17 2018 11:18:40 GMT-0500 (EST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sun Jan 21 2018 00:40:28 GMT-0500 (EST)
 </footer>
 
 <script> prettyPrint(); </script>

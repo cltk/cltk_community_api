@@ -39,61 +39,61 @@ const Schema = mongoose.Schema;
  * @type {Schema}
  */
 const ProjectSchema = new Schema({
-	_id: {
-		type: String,
-		default: shortid.generate
-	},
-	title: {
-		type: String,
-		required: true,
-		trim: true,
-		index: true,
-	},
-	subtitle: {
-		type: String,
-	},
-	status: {
-		type: String,
-		required: true,
-		enum: ['private', 'public'],
-	},
-	description: {
-		type: String,
-	},
-	hostname: {
-		unique: true,
-		required: true,
-		type: String,
-		trim: true,
-		index: true,
-	},
-	email: {
-		type: String,
-	},
-	url: {
-		type: String,
-	},
-	address: {
-		type: String,
-	},
-	phone: {
-		type: String,
-	},
-	users: [{
-		userId: {
-			type: String,
-			ref: 'User',
-			index: true,
-		},
-		role: {
-			type: String,
-			enum: ['admin', 'editor'],
-		},
-		status: {
-			type: String,
-			enum: ['private', 'public', 'pending'],
-		},
-	}],
+  _id: {
+    type: String,
+    default: shortid.generate
+  },
+  title: {
+    type: String,
+    required: true,
+    trim: true,
+    index: true,
+  },
+  subtitle: {
+    type: String,
+  },
+  status: {
+    type: String,
+    required: true,
+    enum: ['private', 'public'],
+  },
+  description: {
+    type: String,
+  },
+  hostname: {
+    unique: true,
+    required: true,
+    type: String,
+    trim: true,
+    index: true,
+  },
+  email: {
+    type: String,
+  },
+  url: {
+    type: String,
+  },
+  address: {
+    type: String,
+  },
+  phone: {
+    type: String,
+  },
+  users: [{
+    userId: {
+      type: String,
+      ref: 'User',
+      index: true,
+    },
+    role: {
+      type: String,
+      enum: ['admin', 'editor'],
+    },
+    status: {
+      type: String,
+      enum: ['private', 'public', 'pending'],
+    },
+  }],
 });
 
 
@@ -109,7 +109,7 @@ ProjectSchema.plugin(timestamp);
 
 // add slug (slug)
 ProjectSchema.plugin(URLSlugs('title', {
-	indexUnique: false,
+  indexUnique: false,
 }));
 
 
@@ -123,16 +123,16 @@ ProjectSchema.plugin(URLSlugs('title', {
  * @return {Promise} (Promise) Array of projects
  */
 ProjectSchema.statics.findByUserId = function findByUserId(userId) {
-	return this.find({ users: { $elemMatch: { userId } } });
+  return this.find({ users: { $elemMatch: { userId } } });
 };
 
 /**
  * Find project by hostname of request
- * @param  {String} hostname The hostname that generated the request, such as myproject.orphe.us
+ * @param  {String} hostname The hostname that generated the request, such as myproject.cltk.org
  * @return {Promise} (Promise) The Project
  */
 ProjectSchema.statics.findByHostname = (hostname, cb) => (
-	Project.findOne({ hostname }, cb)
+  Project.findOne({ hostname }, cb)
 );
 
 /**
@@ -142,16 +142,16 @@ ProjectSchema.statics.findByHostname = (hostname, cb) => (
  * @return {Promise}            	(Promise) True if user has the role of owner for this project
  */
 ProjectSchema.statics.isUserAdmin = async function isUserAdmin(projectId, userId) {
-	try {
-		const project = await this.find({ _id: projectId, users: { $elemMatch: { userId, role: 'admin' } } });
+  try {
+    const project = await this.find({ _id: projectId, users: { $elemMatch: { userId, role: 'admin' } } });
 
-		if (project) return true;
+    if (project) return true;
 
-		return false;
+    return false;
 
-	} catch (err) {
-		throw err;
-	}
+  } catch (err) {
+    throw err;
+  }
 };
 
 /**
@@ -161,13 +161,13 @@ ProjectSchema.statics.isUserAdmin = async function isUserAdmin(projectId, userId
  * @return {Promise}               	(Promise) The new Project
  */
 ProjectSchema.statics.createByAdmin = function createByAdmin(userId, newProject) {
-	return this.create({
-		users: [{
-			userId,
-			role: 'admin',
-		}],
-		...newProject,
-	});
+  return this.create({
+    users: [{
+      userId,
+      role: 'admin',
+    }],
+    ...newProject,
+  });
 };
 
 export default Project;
@@ -182,13 +182,13 @@ export { ProjectSchema };
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="EmailManager.html">EmailManager</a></li><li><a href="module.html#.exports">exports</a></li></ul><h3>Global</h3><ul><li><a href="global.html#ActivityItemType">ActivityItemType</a></li><li><a href="global.html#ArgumentError">ArgumentError</a></li><li><a href="global.html#Article">Article</a></li><li><a href="global.html#ArticleSchema">ArticleSchema</a></li><li><a href="global.html#AuthenticationError">AuthenticationError</a></li><li><a href="global.html#closeDB">closeDB</a></li><li><a href="global.html#Collection">Collection</a></li><li><a href="global.html#CollectionSchema">CollectionSchema</a></li><li><a href="global.html#Comment">Comment</a></li><li><a href="global.html#CommentSchema">CommentSchema</a></li><li><a href="global.html#count">count</a></li><li><a href="global.html#create">create</a></li><li><a href="global.html#dbSetup">dbSetup</a></li><li><a href="global.html#File">File</a></li><li><a href="global.html#FileSchema">FileSchema</a></li><li><a href="global.html#generateJWT">generateJWT</a></li><li><a href="global.html#getActivityFeed">getActivityFeed</a></li><li><a href="global.html#getArticle">getArticle</a></li><li><a href="global.html#getArticles">getArticles</a></li><li><a href="global.html#getCollection">getCollection</a></li><li><a href="global.html#getCollections">getCollections</a></li><li><a href="global.html#getComment">getComment</a></li><li><a href="global.html#getComments">getComments</a></li><li><a href="global.html#getFile">getFile</a></li><li><a href="global.html#getFiles">getFiles</a></li><li><a href="global.html#getItem">getItem</a></li><li><a href="global.html#getItems">getItems</a></li><li><a href="global.html#getManifest">getManifest</a></li><li><a href="global.html#getManifests">getManifests</a></li><li><a href="global.html#getPage">getPage</a></li><li><a href="global.html#getPages">getPages</a></li><li><a href="global.html#getProfile">getProfile</a></li><li><a href="global.html#getProject">getProject</a></li><li><a href="global.html#getProjects">getProjects</a></li><li><a href="global.html#getText">getText</a></li><li><a href="global.html#getTexts">getTexts</a></li><li><a href="global.html#getURL">getURL</a></li><li><a href="global.html#getUser">getUser</a></li><li><a href="global.html#getUserProjects">getUserProjects</a></li><li><a href="global.html#handleMongooseError">handleMongooseError</a></li><li><a href="global.html#invite">invite</a></li><li><a href="global.html#Item">Item</a></li><li><a href="global.html#ItemSchema">ItemSchema</a></li><li><a href="global.html#jwtAuthenticate">jwtAuthenticate</a></li><li><a href="global.html#loginOAuth1">loginOAuth1</a></li><li><a href="global.html#loginOAuth2">loginOAuth2</a></li><li><a href="global.html#loginPWD">loginPWD</a></li><li><a href="global.html#MongooseDuplicateKeyError">MongooseDuplicateKeyError</a></li><li><a href="global.html#MongooseGeneralError">MongooseGeneralError</a></li><li><a href="global.html#MongooseValidationError">MongooseValidationError</a></li><li><a href="global.html#oauthSetup">oauthSetup</a></li><li><a href="global.html#Page">Page</a></li><li><a href="global.html#PageSchema">PageSchema</a></li><li><a href="global.html#PermissionError">PermissionError</a></li><li><a href="global.html#Project">Project</a></li><li><a href="global.html#ProjectError">ProjectError</a></li><li><a href="global.html#ProjectSchema">ProjectSchema</a></li><li><a href="global.html#redisSetup">redisSetup</a></li><li><a href="global.html#remove">remove</a></li><li><a href="global.html#RootMutations">RootMutations</a></li><li><a href="global.html#RootQuery">RootQuery</a></li><li><a href="global.html#RootSubscription">RootSubscription</a></li><li><a href="global.html#save">save</a></li><li><a href="global.html#storeSetup">storeSetup</a></li><li><a href="global.html#Text">Text</a></li><li><a href="global.html#TextSchema">TextSchema</a></li><li><a href="global.html#update">update</a></li><li><a href="global.html#User">User</a></li><li><a href="global.html#userIsActiveUser">userIsActiveUser</a></li><li><a href="global.html#userIsAdmin">userIsAdmin</a></li><li><a href="global.html#UserSchema">UserSchema</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="EmailManager.html">EmailManager</a></li><li><a href="module.html#.exports">exports</a></li></ul><h3>Global</h3><ul><li><a href="global.html#ArgumentError">ArgumentError</a></li><li><a href="global.html#AuthenticationError">AuthenticationError</a></li><li><a href="global.html#closeDB">closeDB</a></li><li><a href="global.html#Comment">Comment</a></li><li><a href="global.html#CommentSchema">CommentSchema</a></li><li><a href="global.html#count">count</a></li><li><a href="global.html#create">create</a></li><li><a href="global.html#createRemoteSchema">createRemoteSchema</a></li><li><a href="global.html#dbSetup">dbSetup</a></li><li><a href="global.html#File">File</a></li><li><a href="global.html#FileSchema">FileSchema</a></li><li><a href="global.html#generateJWT">generateJWT</a></li><li><a href="global.html#getActivityFeed">getActivityFeed</a></li><li><a href="global.html#getCollections">getCollections</a></li><li><a href="global.html#getComment">getComment</a></li><li><a href="global.html#getComments">getComments</a></li><li><a href="global.html#getFile">getFile</a></li><li><a href="global.html#getFiles">getFiles</a></li><li><a href="global.html#getItem">getItem</a></li><li><a href="global.html#getItems">getItems</a></li><li><a href="global.html#getManifest">getManifest</a></li><li><a href="global.html#getManifests">getManifests</a></li><li><a href="global.html#getPage">getPage</a></li><li><a href="global.html#getPages">getPages</a></li><li><a href="global.html#getProfile">getProfile</a></li><li><a href="global.html#getProject">getProject</a></li><li><a href="global.html#getProjects">getProjects</a></li><li><a href="global.html#getURL">getURL</a></li><li><a href="global.html#getUser">getUser</a></li><li><a href="global.html#getUserProjects">getUserProjects</a></li><li><a href="global.html#handleMongooseError">handleMongooseError</a></li><li><a href="global.html#invite">invite</a></li><li><a href="global.html#Item">Item</a></li><li><a href="global.html#ItemSchema">ItemSchema</a></li><li><a href="global.html#jwtAuthenticate">jwtAuthenticate</a></li><li><a href="global.html#loginOAuth1">loginOAuth1</a></li><li><a href="global.html#loginOAuth2">loginOAuth2</a></li><li><a href="global.html#loginPWD">loginPWD</a></li><li><a href="global.html#MongooseDuplicateKeyError">MongooseDuplicateKeyError</a></li><li><a href="global.html#MongooseGeneralError">MongooseGeneralError</a></li><li><a href="global.html#MongooseValidationError">MongooseValidationError</a></li><li><a href="global.html#oauthSetup">oauthSetup</a></li><li><a href="global.html#Page">Page</a></li><li><a href="global.html#PageSchema">PageSchema</a></li><li><a href="global.html#PermissionError">PermissionError</a></li><li><a href="global.html#Project">Project</a></li><li><a href="global.html#ProjectError">ProjectError</a></li><li><a href="global.html#ProjectSchema">ProjectSchema</a></li><li><a href="global.html#redisSetup">redisSetup</a></li><li><a href="global.html#remove">remove</a></li><li><a href="global.html#RootMutations">RootMutations</a></li><li><a href="global.html#RootQuery">RootQuery</a></li><li><a href="global.html#RootSchema">RootSchema</a></li><li><a href="global.html#RootSubscription">RootSubscription</a></li><li><a href="global.html#setupGraphql">setupGraphql</a></li><li><a href="global.html#storeSetup">storeSetup</a></li><li><a href="global.html#update">update</a></li><li><a href="global.html#User">User</a></li><li><a href="global.html#userIsActiveUser">userIsActiveUser</a></li><li><a href="global.html#userIsAdmin">userIsAdmin</a></li><li><a href="global.html#UserSchema">UserSchema</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Jan 17 2018 11:18:40 GMT-0500 (EST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sun Jan 21 2018 00:40:28 GMT-0500 (EST)
 </footer>
 
 <script> prettyPrint(); </script>

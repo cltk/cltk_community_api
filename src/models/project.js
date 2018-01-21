@@ -100,7 +100,7 @@ ProjectSchema.statics.findByUserId = function findByUserId(userId) {
 
 /**
  * Find project by hostname of request
- * @param  {String} hostname The hostname that generated the request, such as myproject.orphe.us
+ * @param  {String} hostname The hostname that generated the request, such as myproject.cltk.org
  * @return {Promise} (Promise) The Project
  */
 ProjectSchema.statics.findByHostname = (hostname, cb) => (
