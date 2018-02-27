@@ -7,9 +7,7 @@ import {
 import { createApolloFetch } from 'apollo-fetch';
 import { maskErrors } from 'graphql-errors';
 import { createServer } from 'http';
-// import { PubSub } from 'graphql-subscriptions';
 import { RedisPubSub } from 'graphql-redis-subscriptions';
-import { SubscriptionServer } from 'subscriptions-transport-ws';
 import jwt from 'jsonwebtoken';
 
 
@@ -19,7 +17,6 @@ import { jwtAuthenticate } from './authentication';
 // graphql
 import RootQuery from './graphql/queries/rootQuery';
 import RootMutation from './graphql/mutations/rootMutation';
-import RootSubscription from './graphql/subscriptions/rootSubscription';
 
 // models
 import User from './models/user';
@@ -44,7 +41,6 @@ const createRemoteSchema = async (uri) => {
 const RootSchema = new GraphQLSchema({
 	query: RootQuery,
 	mutation: RootMutation,
-	// subscription: RootSubscription,
 });
 
 // mask error messages
@@ -75,7 +71,7 @@ const getGraphQLContext = (req) => {
  * @param  {Object} app 	express app instance
  */
 const setupGraphql = async (app) => {
-	const chsTextserverSchema = await createRemoteSchema('http://textserver.chs.harvard.edu/graphql');
+	const chsTextserverSchema = await createRemoteSchema(process.env.TEXTSERVER_URL || 'http://textserver.chs.harvard.edu/graphql');
 
 	const schema = mergeSchemas({
 		schemas: [RootSchema, chsTextserverSchema],
@@ -90,28 +86,7 @@ const setupGraphql = async (app) => {
 
 	app.use('/graphiql', graphiqlExpress({
 		endpointURL: '/graphql',
-		// subscriptionsEndpoint: `ws://${process.env.WS_SERVER_HOST}:${process.env.WS_SERVER_PORT}/${process.env.WS_SERVER_URI}`
 	}));
-
-	/**
-	 * Websockets server
-	 */
-	/*
-	// Wrap the Express server
-	const ws = createServer(app);
-	ws.listen(process.env.WS_SERVER_PORT, () => {
-		console.log(`GraphQL WebSocket Server is now running on ws://${process.env.WS_SERVER_HOST}:${process.env.WS_SERVER_PORT}`);
-		// Set up the WebSocket for handling GraphQL subscriptions
-		const subscriptionsServer = new SubscriptionServer({
-			execute,
-			subscribe,
-			schema: RootSchema,
-		}, {
-			server: ws,
-			path: `/${process.env.WS_SERVER_URI}`,
-		});
-	});
-	*/
 };
 
 export default setupGraphql;
